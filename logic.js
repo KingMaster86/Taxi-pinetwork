@@ -15,6 +15,7 @@ firebase.auth().onAuthStateChanged((user) => {
     document.getElementById('user-menu').style.display = 'block';
     document.getElementById('auth-section').style.display = 'none';
     document.getElementById('user-info').innerText = user.email;
+    loadUserData(user.uid);
   } else {
     currentUser = null;
     document.getElementById('auth-section').innerHTML = renderAuthForms();
@@ -84,14 +85,105 @@ function calculateFare() {
     const distanceKM = distanceMeters / 1000;
     const fare = Math.ceil(distanceKM * rates[type]);
     document.getElementById('fare-result').innerText = `Distance: ${distanceKM.toFixed(2)} km\nFare: Rp ${fare.toLocaleString()}`;
+
+    if (currentUser && type !== 'passenger') {
+      deductBalance(currentUser.uid, fare);
+    }
+  });
+}
+
+function deductBalance(uid, fare) {
+  const dbRef = firebase.database().ref('users/' + uid);
+  dbRef.once('value').then(snapshot => {
+    const user = snapshot.val();
+    if (!user) return;
+    let balance = parseInt(user.balance || 0);
+    const fee = Math.ceil(fare * 0.06);
+    const newBalance = balance - fee;
+    if (newBalance < 0) {
+      alert('Saldo tidak cukup untuk potongan biaya (6%).');
+    } else {
+      dbRef.update({ balance: newBalance });
+      alert(`Potongan 6%: Rp ${fee}. Sisa saldo: Rp ${newBalance}`);
+      document.getElementById('saldo-display').innerText = 'Rp ' + newBalance.toLocaleString();
+    }
+  });
+}
+
+function loadUserData(uid) {
+  const dbRef = firebase.database().ref('users/' + uid);
+  dbRef.once('value').then(snapshot => {
+    const user = snapshot.val();
+    if (user && user.balance != null) {
+      const balanceText = 'Rp ' + parseInt(user.balance).toLocaleString();
+      document.getElementById('saldo-display').innerText = balanceText;
+    }
+    if (user && user.role) {
+      document.getElementById('role-display').innerText = user.role.toUpperCase();
+    }
   });
 }
 
 function setLanguage(lang) {
   currentLanguage = lang;
-  // Optional: add multilingual UI updates here
+  const labelMap = {
+    en: {
+      login: 'Login', register: 'Register', forgot: 'Forgot Password', start: 'Starting Point', end: 'Destination'
+    },
+    id: {
+      login: 'Masuk', register: 'Daftar', forgot: 'Lupa Kata Sandi', start: 'Titik Awal', end: 'Tujuan'
+    }
+  };
+  const labels = labelMap[lang];
+  document.querySelector("label[for='inputStart']").innerText = labels.start;
+  document.querySelector("label[for='inputDest']").innerText = labels.end;
+  document.getElementById('calc').innerText = (lang === 'id' ? 'Hitung Tarif' : 'Calculate Price');
+  // Add more UI updates as needed
 }
 
 function contactSupport() {
   alert('Hubungi admin@taxipi.network atau WhatsApp +62xxx');
+}
+
+// ✅ Upload and save user info to Firebase
+const form = document.getElementById('verificationForm');
+if (form) {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const role = document.getElementById('userRole').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+
+    const uploads = {
+      idCard: document.getElementById('idCard').files[0],
+      sim: document.getElementById('sim')?.files?.[0],
+      vehicleDoc: document.getElementById('vehicleDoc')?.files?.[0],
+    };
+
+    const storage = firebase.storage();
+    const uploadedURLs = {};
+
+    for (let key in uploads) {
+      if (uploads[key]) {
+        const ref = storage.ref(`users/${currentUser.uid}/${key}`);
+        await ref.put(uploads[key]);
+        uploadedURLs[key] = await ref.getDownloadURL();
+      }
+    }
+
+    const userData = {
+      uid: currentUser.uid,
+      name,
+      email,
+      phone,
+      role,
+      balance: 0,
+      verified: true,
+      docs: uploadedURLs
+    };
+
+    await firebase.database().ref('users/' + currentUser.uid).set(userData);
+    alert('Verification submitted!');
+  });
 }
