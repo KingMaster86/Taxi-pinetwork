@@ -1,128 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TAXI PI - Welcome</title>
+  <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#5E2B97" />
-  <link rel="manifest" href="manifest.json">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js');
-    }
-  </script>
-  <title>Taxi PI Network</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw&libraries=places"></script>
   <style>
+    /* Warna ungu dominan & efek 3D sederhana */
     body {
-      background: linear-gradient(145deg, #6e38b6, #51268f);
+      margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #5E2B97, #833AB4);
       color: white;
-      font-family: 'Segoe UI', sans-serif;
-      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100vh;
+      perspective: 1200px;
     }
     .container {
-      background: #5E2B97;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      padding: 30px;
-      margin-top: 40px;
-    }
-    .btn, select, input[type="text"], input[type="email"], input[type="file"], input[type="number"] {
-      border-radius: 10px;
-      border: none;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .btn {
-      background-color: #fff;
-      color: #5E2B97;
-      font-weight: bold;
-    }
-    .btn:hover {
-      background-color: #f0e6ff;
-      color: #5E2B97;
-    }
-    h2, h4, h5 {
+      background: rgba(70, 25, 110, 0.85);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 0 30px #833AB4;
+      transform-style: preserve-3d;
+      transform: rotateX(8deg) rotateY(-10deg);
+      width: 320px;
       text-align: center;
     }
-    .language-switch {
-      text-align: right;
+    h1 {
+      font-weight: 900;
+      text-shadow: 0 0 10px #9b59b6;
+      margin-bottom: 1rem;
+    }
+    select, input[type="email"], input[type="password"], button {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      box-shadow: inset 0 0 8px #6b1fa8;
+      background-color: #7e40bf;
+      color: white;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #9b59b6;
+      cursor: pointer;
+    }
+    #message {
+      font-size: 0.9rem;
+      margin: 0.5rem 0;
+      min-height: 1.2em;
+    }
+    .lang-switch {
+      margin-bottom: 1rem;
     }
   </style>
 </head>
-
 <body>
-  <div class="container py-4">
-    <h2 class="text-center">🚖 Welcome to <strong>TAXI PI</strong></h2>
-    <p class="text-center">By Pioneers, From Pioneers</p>
+  <div class="container">
+    <h1 id="title">Welcome To TAXI PI By Pioneers From Pioneers</h1>
 
-    <div class="language-switch">
-      <button class="btn btn-light btn-sm" onclick="setLanguage('id')">Bahasa</button>
-      <button class="btn btn-light btn-sm" onclick="setLanguage('en')">English</button>
-    </div>
-
-    <div id="auth-section">
-      <!-- Login/Register/Forget Password Form -->
-    </div>
-
-    <div id="role-selection" class="mt-4" style="display:none">
-      <h5>Select Role:</h5>
-      <select id="userRole" onchange="showRoleForm()">
-        <option value="">-- Choose --</option>
-        <option value="passenger">Passenger</option>
-        <option value="motor">Motorcycle Driver</option>
-        <option value="car">Car Driver</option>
-        <option value="courier">Courier</option>
+    <div class="lang-switch">
+      <select id="languageSelect" aria-label="Select Language">
+        <option value="id">Bahasa Indonesia</option>
+        <option value="en">English</option>
       </select>
     </div>
 
-    <form id="verificationForm" class="mt-3" style="display:none">
-      <div id="common-fields">
-        <input type="file" id="idCard" required><label>ID Card</label><br>
-        <input type="text" id="name" placeholder="Full Name" required><br>
-        <input type="email" id="email" placeholder="Email" required><br>
-        <input type="text" id="phone" placeholder="Phone Number" required><br>
-      </div>
-      <div id="driver-fields" style="display:none">
-        <input type="file" id="sim" required><label>SIM</label><br>
-        <input type="file" id="vehicleDoc" required><label>Vehicle Document</label><br>
-        <input type="text" id="licensePlate" placeholder="Plate Number" required><br>
-      </div>
-      <button type="submit" class="btn btn-light btn-block">Submit Verification</button>
-    </form>
+    <input type="email" id="email" placeholder="Email" autocomplete="username" />
+    <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
 
-    <div id="deposit-section" class="mt-3" style="display:none">
-      <h5>Deposit Balance</h5>
-      <a class="btn btn-light btn-block" href="https://buy.stripe.com/7sYbJ14Dt9FPaYTdF04ow00" target="_blank">Click here to Deposit via Stripe</a>
-    </div>
+    <button id="loginBtn">Login</button>
+    <button id="registerBtn">Register</button>
 
-    <div id="calculate-fare" class="mt-4" style="display:none">
-      <h4>Calculate Fare</h4>
-      <input type="text" id="start" placeholder="Starting Point"><br>
-      <input type="text" id="end" placeholder="Destination"><br>
-      <select id="vehicleType">
-        <option value="car">Car</option>
-        <option value="motor">Motorcycle</option>
-        <option value="courier">Courier</option>
-      </select><br>
-      <button class="btn btn-light btn-block" onclick="calculateFare()">Calculate Fare</button>
-      <p id="fare-result" class="text-center"></p>
-    </div>
-
-    <div class="menu mt-4" id="user-menu" style="display:none">
-      <img id="profile-photo" src="" alt="Profile" width="50" class="rounded-circle">
-      <p id="user-info"></p>
-      <button class="btn btn-light btn-block" onclick="logout()">Logout</button>
-      <button class="btn btn-light btn-block" onclick="contactSupport()">Help / CS</button>
-    </div>
+    <div id="message"></div>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <!-- Google Maps API -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw&libraries=places"></script>
+
   <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
       authDomain: "taxi-pi-network.firebaseapp.com",
@@ -134,8 +100,104 @@
       measurementId: "G-62J9SRR509"
     };
     firebase.initializeApp(firebaseConfig);
-  </script>
-  <script src="js/logic.js"></script>
-</body>
 
+    const auth = firebase.auth();
+    const database = firebase.database();
+
+    // Language dictionary
+    const translations = {
+      id: {
+        welcome: "Welcome To TAXI PI By Pioneers From Pioneers",
+        email: "Email",
+        password: "Password",
+        login: "Masuk",
+        register: "Daftar",
+        msgLoginSuccess: "Berhasil masuk!",
+        msgRegisterSuccess: "Berhasil daftar! Silakan login.",
+        msgError: "Terjadi kesalahan: ",
+      },
+      en: {
+        welcome: "Welcome To TAXI PI By Pioneers From Pioneers",
+        email: "Email",
+        password: "Password",
+        login: "Login",
+        register: "Register",
+        msgLoginSuccess: "Login successful!",
+        msgRegisterSuccess: "Registered successfully! Please login.",
+        msgError: "Error occurred: ",
+      }
+    };
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const messageEl = document.getElementById('message');
+    const languageSelect = document.getElementById('languageSelect');
+    const titleEl = document.getElementById('title');
+
+    // Change UI language
+    function changeLanguage(lang) {
+      titleEl.textContent = translations[lang].welcome;
+      emailInput.placeholder = translations[lang].email;
+      passwordInput.placeholder = translations[lang].password;
+      loginBtn.textContent = translations[lang].login;
+      registerBtn.textContent = translations[lang].register;
+      messageEl.textContent = "";
+    }
+
+    languageSelect.addEventListener('change', e => {
+      changeLanguage(e.target.value);
+    });
+
+    // Default language
+    changeLanguage(languageSelect.value);
+
+    // Register user
+    registerBtn.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const pass = passwordInput.value;
+      if(!email || !pass) {
+        messageEl.textContent = "Please enter email and password.";
+        return;
+      }
+      auth.createUserWithEmailAndPassword(email, pass)
+      .then(userCredential => {
+        messageEl.textContent = translations[languageSelect.value].msgRegisterSuccess;
+      })
+      .catch(error => {
+        messageEl.textContent = translations[languageSelect.value].msgError + error.message;
+      });
+    });
+
+    // Login user
+    loginBtn.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const pass = passwordInput.value;
+      if(!email || !pass) {
+        messageEl.textContent = "Please enter email and password.";
+        return;
+      }
+      auth.signInWithEmailAndPassword(email, pass)
+      .then(userCredential => {
+        messageEl.textContent = translations[languageSelect.value].msgLoginSuccess;
+
+        // Redirect to dashboard, user can select role after login
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1200);
+      })
+      .catch(error => {
+        messageEl.textContent = translations[languageSelect.value].msgError + error.message;
+      });
+    });
+
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch(e => console.log('Service Worker registration failed', e));
+    }
+  </script>
+</body>
 </html>
