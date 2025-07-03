@@ -12,7 +12,7 @@
   <style>
     body {
       background: #5E2B97;
-      color: white;
+      color: #ffffff;
       font-family: 'Poppins', sans-serif;
       display: flex;
       justify-content: center;
@@ -21,36 +21,40 @@
       margin: 0;
     }
     #login-form {
-      background: rgba(94, 43, 151, 0.85);
+      background: rgba(44, 13, 90, 0.9);
       padding: 2rem;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
       width: 320px;
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
-    input, button, select {
+    input, select, button {
       padding: 0.7rem 1rem;
       border-radius: 10px;
       border: none;
       font-size: 1rem;
     }
+    input, select {
+      color: #000;
+    }
     button {
-      background: #7d56cc;
-      color: white;
-      font-weight: 600;
+      background-color: #ffffff;
+      color: #5E2B97;
+      font-weight: bold;
       cursor: pointer;
       transition: background-color 0.3s;
     }
     button:hover {
-      background: #9271d7;
+      background-color: #d1c6f0;
     }
     h1 {
       text-align: center;
       margin-bottom: 1rem;
       font-weight: 700;
-      text-shadow: 0 0 8px #bb99ff;
+      color: #fff;
+      text-shadow: 0 0 6px #c8aaff;
     }
     #error-msg {
       color: #ff6b6b;
@@ -61,13 +65,13 @@
   </style>
 </head>
 <body>
-  <form id="login-form" aria-label="Login or register form for TAXI PI">
+  <form id="login-form">
     <h1>Welcome To TAXI PI</h1>
     <input type="email" id="email" placeholder="Email" required />
     <input type="password" id="password" placeholder="Password" required />
     <select id="role" required>
-      <option value="" disabled selected>Pilih peran / Select role</option>
-      <option value="passenger">Penumpang / Passenger</option>
+      <option value="" disabled selected>Pilih peran</option>
+      <option value="passenger">Penumpang</option>
       <option value="carDriver">Driver Mobil</option>
       <option value="motorDriver">Driver Motor</option>
       <option value="courier">Kurir</option>
@@ -93,55 +97,73 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    document.getElementById('btn-register').onclick = () => {
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const roleSelect = document.getElementById("role");
+    const errorMsg = document.getElementById("error-msg");
+
+    document.getElementById("btn-register").addEventListener("click", () => {
       const email = emailInput.value.trim();
       const password = passwordInput.value;
       const role = roleSelect.value;
-      if (!email || !password || !role) return showError("Mohon isi semua field.");
+
+      if (!email || !password || !role) {
+        errorMsg.textContent = "Isi semua kolom.";
+        return;
+      }
 
       auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const uid = userCredential.user.uid;
+        .then(userCred => {
+          const uid = userCred.user.uid;
           db.ref("users/" + uid).set({
-            email, role, balance: 0, createdAt: Date.now()
+            email,
+            role,
+            balance: 0,
+            createdAt: Date.now()
           });
           redirect(role);
         })
-        .catch(error => showError(error.message));
-    };
+        .catch(err => {
+          errorMsg.textContent = err.message;
+          console.error(err);
+        });
+    });
 
-    document.getElementById('btn-login').onclick = () => {
+    document.getElementById("btn-login").addEventListener("click", () => {
       const email = emailInput.value.trim();
       const password = passwordInput.value;
-      if (!email || !password) return showError("Isi email & password.");
+
+      if (!email || !password) {
+        errorMsg.textContent = "Isi email dan password.";
+        return;
+      }
 
       auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          const uid = userCredential.user.uid;
-          db.ref("users/" + uid + "/role").once("value", snapshot => {
-            const role = snapshot.val();
-            if (role) redirect(role);
-            else showError("Role tidak ditemukan.");
-          });
+        .then(userCred => {
+          const uid = userCred.user.uid;
+          db.ref("users/" + uid + "/role").once("value")
+            .then(snapshot => {
+              const role = snapshot.val();
+              if (!role) {
+                errorMsg.textContent = "Role tidak ditemukan.";
+              } else {
+                redirect(role);
+              }
+            });
         })
-        .catch(error => showError(error.message));
-    };
+        .catch(err => {
+          errorMsg.textContent = err.message;
+          console.error(err);
+        });
+    });
 
     function redirect(role) {
       if (role === "passenger") location.href = "dashboard-passenger.html";
       else if (role === "carDriver") location.href = "dashboard-driver-car.html";
       else if (role === "motorDriver") location.href = "dashboard-driver-motor.html";
       else if (role === "courier") location.href = "dashboard-courier.html";
-      else showError("Peran tidak valid.");
+      else errorMsg.textContent = "Role tidak valid.";
     }
-
-    function showError(msg) {
-      document.getElementById('error-msg').textContent = msg;
-    }
-
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const roleSelect = document.getElementById("role");
   </script>
 </body>
 </html>
