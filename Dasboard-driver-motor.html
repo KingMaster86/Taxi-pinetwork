@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard Driver Motor - TAXI PI</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#5E2B97" />
+<style>
+  body {
+    background: #5E2B97;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  header {
+    background: #7d56cc;
+    padding: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.4rem;
+    box-shadow: 0 0 20px #bb99ff;
+  }
+  main {
+    flex-grow: 1;
+    padding: 1rem;
+  }
+  button {
+    background: #9271d7;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  button:hover {
+    background: #ad8bf3;
+  }
+</style>
+</head>
+<body>
+<header>
+  Dashboard Driver Motor - TAXI PI
+</header>
+<main>
+  <p>Selamat datang, <span id="user-email"></span></p>
+  <button id="btnLogout">Logout</button>
+</main>
+
+<script type="module">
+  import { auth } from './firebase.js';
+
+  // Pastikan user sudah login
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+    document.getElementById('user-email').textContent = user.email;
+  });
+
+  document.getElementById('btnLogout').onclick = () => {
+    auth.signOut().then(() => {
+      window.location.href = "index.html";
+    });
+  };
+</script>
+</body>
+</html>
