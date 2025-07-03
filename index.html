@@ -1,115 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta name="description" content="TaxiApp - Calculate Fees before you ride ">
-    <meta name="author" content="Avi Parshan">
-    <title>TaxiApp - Calculate Fees before you ride</title>
-    <meta name="og:title" property="og:title" content="TaxiApp - Calculate Fees before you ride">
-     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js"></script>
-    <script src="js/validate.js"></script>
-
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-        </script>
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
-
-    <link rel="stylesheet" href="css/styles.css" rel="stylesheet">
-    <script src=js/main.js></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5E2B97" />
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+  <title>Taxi PI Network</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw&libraries=places"></script>
+  <style>
+    body {
+      background: linear-gradient(145deg, #6e38b6, #51268f);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+    .container {
+      background: #5E2B97;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      margin-top: 40px;
+    }
+    .btn, select, input[type="text"], input[type="email"], input[type="file"], input[type="number"] {
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .btn {
+      background-color: #fff;
+      color: #5E2B97;
+      font-weight: bold;
+    }
+    .btn:hover {
+      background-color: #f0e6ff;
+      color: #5E2B97;
+    }
+    h2, h4, h5 {
+      text-align: center;
+    }
+    .language-switch {
+      text-align: right;
+    }
+  </style>
 </head>
 
-<body id="page-top" onload="setValue()">
+<body>
+  <div class="container py-4">
+    <h2 class="text-center">🚖 Welcome to <strong>TAXI PI</strong></h2>
+    <p class="text-center">By Pioneers, From Pioneers</p>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-                <div class="card card-signin my-5">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Welcome to TaxiApp</h5>
-                        <form class="form-signin" name="taxiForm" id="taxiForm" action="">
-
-                            <div class="form-label-group">
-                                <input type="text" id="inputStart" class="form-control" placeholder="Starting Point"
-                                    required autofocus>
-                                <label for="inputStart">Starting Point</label>
-                            </div>
-                            <div class="form-label-group">
-                                <input type="text" id="inputDest" class="form-control" placeholder="Destination"
-                                    required>
-                                <label for="inputDest">Destination</label>
-                            </div>
-
-                            <div class="form-label-group md-form md-outline">
-                                <!-- <input type="text" class="timepicker" name="time"/> -->
-                                <input type="time" id="default-picker" class="form-control" placeholder="Select time">
-                                <label for="default-picker">Time of Day</label>
-                            </div>
-
-
-                            <div class="form-label-group">
-                                <input type="number" id="inputPasse" class="form-control"
-                                    placeholder="How many passengers?" min="1" max="20" >
-                                <label for="inputPasse">How many passengers?</label>
-                            </div>
-                            <div class="form-label-group">
-                                <input type="number" id="inputBags" class="form-control" placeholder="How many bags?"
-                                    min="0" max="100" required autofocus>
-                                <label for="inputBags">How many bags?</label>
-                            </div>
-
-                            <button id="calc" class="btn btn-lg btn-dark btn-block text-uppercase" type="submit"
-                                onsubmit="calculation()">Calculate Price</button>
-                            <!-- <hr class="my-4"> -->
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="language-switch">
+      <button class="btn btn-light btn-sm" onclick="setLanguage('id')">Bahasa</button>
+      <button class="btn btn-light btn-sm" onclick="setLanguage('en')">English</button>
     </div>
 
-    <script type="text/javascript">
+    <div id="auth-section">
+      <!-- Login/Register/Forget Password Form -->
+    </div>
 
-        function calculation() {
-            var queryString = $('#taxiForm').formSerialize();
-            alert(queryString);
-            console.log('test')
-        }
+    <div id="role-selection" class="mt-4" style="display:none">
+      <h5>Select Role:</h5>
+      <select id="userRole" onchange="showRoleForm()">
+        <option value="">-- Choose --</option>
+        <option value="passenger">Passenger</option>
+        <option value="motor">Motorcycle Driver</option>
+        <option value="car">Car Driver</option>
+        <option value="courier">Courier</option>
+      </select>
+    </div>
 
-        function setValue() {
-            //pre-fill
-            const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString);
+    <form id="verificationForm" class="mt-3" style="display:none">
+      <div id="common-fields">
+        <input type="file" id="idCard" required><label>ID Card</label><br>
+        <input type="text" id="name" placeholder="Full Name" required><br>
+        <input type="email" id="email" placeholder="Email" required><br>
+        <input type="text" id="phone" placeholder="Phone Number" required><br>
+      </div>
+      <div id="driver-fields" style="display:none">
+        <input type="file" id="sim" required><label>SIM</label><br>
+        <input type="file" id="vehicleDoc" required><label>Vehicle Document</label><br>
+        <input type="text" id="licensePlate" placeholder="Plate Number" required><br>
+      </div>
+      <button type="submit" class="btn btn-light btn-block">Submit Verification</button>
+    </form>
 
-            const startID = 'inputStart', destID = 'inputDest', passID = 'inputPasse', bagsID = 'inputBags'
-            const start = urlParams.get(startID)
-            if (start != null) {
-                var startInput = document.getElementById(startID);
-                startInput.value = start;
-            }
-            const dest = urlParams.get(destID)
-            if (dest != null) {
-                var destInput = document.getElementById(destID);
-                destInput.value = dest;
-            }
-            const passengers = urlParams.get(passID)
-            if (passengers != null) {
-                var passInput = document.getElementById(passID);
-                passInput.value = passengers;
-            }
-            const bags = urlParams.get(bagsID)
-            if (bags != null) {
-                var bagsInput = document.getElementById(bagsID);
-                bagsInput.value = bags;
-            }
-        }
-    </script>
+    <div id="deposit-section" class="mt-3" style="display:none">
+      <h5>Deposit Balance</h5>
+      <a class="btn btn-light btn-block" href="https://buy.stripe.com/7sYbJ14Dt9FPaYTdF04ow00" target="_blank">Click here to Deposit via Stripe</a>
+    </div>
+
+    <div id="calculate-fare" class="mt-4" style="display:none">
+      <h4>Calculate Fare</h4>
+      <input type="text" id="start" placeholder="Starting Point"><br>
+      <input type="text" id="end" placeholder="Destination"><br>
+      <select id="vehicleType">
+        <option value="car">Car</option>
+        <option value="motor">Motorcycle</option>
+        <option value="courier">Courier</option>
+      </select><br>
+      <button class="btn btn-light btn-block" onclick="calculateFare()">Calculate Fare</button>
+      <p id="fare-result" class="text-center"></p>
+    </div>
+
+    <div class="menu mt-4" id="user-menu" style="display:none">
+      <img id="profile-photo" src="" alt="Profile" width="50" class="rounded-circle">
+      <p id="user-info"></p>
+      <button class="btn btn-light btn-block" onclick="logout()">Logout</button>
+      <button class="btn btn-light btn-block" onclick="contactSupport()">Help / CS</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
+      authDomain: "taxi-pi-network.firebaseapp.com",
+      databaseURL: "https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "taxi-pi-network",
+      storageBucket: "taxi-pi-network.firebasestorage.app",
+      messagingSenderId: "424683034285",
+      appId: "1:424683034285:web:78d616a9dd98a78a0cd824",
+      measurementId: "G-62J9SRR509"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <script src="js/logic.js"></script>
 </body>
 
 </html>
