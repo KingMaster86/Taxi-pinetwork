@@ -3,154 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TAXI PI - Login/Register</title>
+  <title>Login TAXI PI</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#5E2B97" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
     body {
-      margin: 0; 
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #5E2B97, #A475D1);
+      background: #5E2B97;
       color: white;
-      height: 100vh;
+      font-family: 'Poppins', sans-serif;
       display: flex;
-      align-items: center;
       justify-content: center;
-      perspective: 1000px;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-    #container {
-      background: rgba(94,43,151,0.9);
-      padding: 2rem 3rem;
+    #login-form {
+      background: rgba(94, 43, 151, 0.85);
+      padding: 2rem;
       border-radius: 20px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       width: 320px;
-      text-align: center;
-      transform-style: preserve-3d;
-      animation: float 6s ease-in-out infinite;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotateX(0deg); }
-      50% { transform: translateY(-15px) rotateX(5deg); }
-    }
-    h1 {
-      margin-bottom: 0.5rem;
-      font-weight: 700;
-      font-size: 1.8rem;
-      text-shadow: 0 0 10px #bb99ff;
-    }
-    p.welcome-text {
-      font-size: 0.9rem;
-      margin-bottom: 1.8rem;
-      font-weight: 500;
-      color: #d9cfff;
-    }
-    label {
-      display: block;
-      margin: 0.7rem 0 0.3rem;
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    select, input {
-      width: 100%;
-      padding: 0.5rem 0.7rem;
+    input, button, select {
+      padding: 0.7rem 1rem;
       border-radius: 10px;
       border: none;
-      outline: none;
       font-size: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: inset 0 0 5px rgba(255,255,255,0.2);
-      background-color: #7d56cc;
-      color: white;
-      transition: background-color 0.3s;
-    }
-    select:hover, input:hover, select:focus, input:focus {
-      background-color: #9271d7;
     }
     button {
-      width: 100%;
-      padding: 0.7rem;
-      border-radius: 15px;
-      border: none;
-      background: #a475d1;
+      background: #7d56cc;
       color: white;
-      font-weight: 700;
-      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 0 10px #bb99ff;
       transition: background-color 0.3s;
     }
     button:hover {
-      background-color: #c7a4ff;
-      color: #3b0e5c;
+      background: #9271d7;
     }
-    .switch-lang {
-      margin-bottom: 1.2rem;
-      cursor: pointer;
-      font-size: 0.85rem;
-      color: #d9cfff;
-      user-select: none;
-    }
-    .error-msg {
-      color: #ff8080;
-      font-weight: 600;
-      font-size: 0.85rem;
+    h1 {
+      text-align: center;
       margin-bottom: 1rem;
-      display: none;
+      font-weight: 700;
+      text-shadow: 0 0 8px #bb99ff;
     }
-    a.switch-to {
-      font-size: 0.85rem;
-      color: #d9cfff;
-      cursor: pointer;
-      text-decoration: underline;
-      user-select: none;
+    #error-msg {
+      color: #ff6b6b;
+      font-weight: 600;
+      min-height: 1.2rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div id="container">
-    <h1 id="title">Welcome To TAXI PI</h1>
-    <p class="welcome-text" id="welcomeText">By Pioneers From Pioneers</p>
-
-    <label for="languageSelect" id="labelLang">Pilih Bahasa / Select Language</label>
-    <select id="languageSelect" aria-label="Language Select">
-      <option value="id">Bahasa Indonesia</option>
-      <option value="en">English</option>
-    </select>
-
-    <label for="roleSelect" id="labelRole">Pilih Peran / Select Role</label>
-    <select id="roleSelect" aria-label="Role Select">
+  <form id="login-form" aria-label="Login or register form for TAXI PI">
+    <h1>Welcome To TAXI PI</h1>
+    <input type="email" id="email" placeholder="Email" aria-label="Email" required />
+    <input type="password" id="password" placeholder="Password" aria-label="Password" required minlength="6" />
+    <select id="role" aria-label="Select your role" required>
+      <option value="" disabled selected>Pilih peran / Select role</option>
       <option value="passenger">Penumpang / Passenger</option>
       <option value="carDriver">Driver Mobil / Car Driver</option>
       <option value="motorDriver">Driver Sepeda Motor / Motor Driver</option>
       <option value="courier">Kurir / Courier</option>
     </select>
-
-    <input type="email" id="emailInput" placeholder="Email" autocomplete="username" />
-    <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password" />
-
-    <div class="error-msg" id="errorMsg"></div>
-
-    <button id="loginBtn">Login</button>
-    <p style="margin-top: 1rem;">
-      <span id="toggleRegister" class="switch-to">Register</span>
-    </p>
-  </div>
+    <button type="button" id="btn-login">Login</button>
+    <button type="button" id="btn-register">Register</button>
+    <div id="error-msg" role="alert" aria-live="assertive"></div>
+  </form>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      onAuthStateChanged,
-    } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
-    import {
-      getDatabase,
-      ref,
-      set,
-    } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
@@ -165,165 +92,69 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const database = getDatabase(app);
+    const db = getDatabase(app);
 
-    const langEl = document.getElementById("languageSelect");
-    const roleEl = document.getElementById("roleSelect");
-    const emailInput = document.getElementById("emailInput");
-    const passwordInput = document.getElementById("passwordInput");
-    const loginBtn = document.getElementById("loginBtn");
-    const errorMsg = document.getElementById("errorMsg");
-    const toggleRegister = document.getElementById("toggleRegister");
-    const titleEl = document.getElementById("title");
-    const welcomeTextEl = document.getElementById("welcomeText");
-    const labelLang = document.getElementById("labelLang");
-    const labelRole = document.getElementById("labelRole");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const roleSelect = document.getElementById("role");
+    const errorMsg = document.getElementById("error-msg");
 
-    let isRegistering = false;
+    const btnLogin = document.getElementById("btn-login");
+    const btnRegister = document.getElementById("btn-register");
 
-    const translations = {
-      id: {
-        welcomeTitle: "Welcome To TAXI PI",
-        welcomeSubtitle: "By Pioneers From Pioneers",
-        selectLang: "Pilih Bahasa / Select Language",
-        selectRole: "Pilih Peran / Select Role",
-        emailPlaceholder: "Email",
-        passwordPlaceholder: "Kata Sandi",
-        loginBtn: "Masuk",
-        registerBtn: "Daftar",
-        toggleRegisterText: "Register",
-        toggleLoginText: "Login",
-        errorEmptyFields: "Email dan password harus diisi",
-        errorInvalidEmail: "Email tidak valid",
-        errorWeakPassword: "Password harus minimal 6 karakter",
-        errorUserExists: "Pengguna sudah terdaftar",
-        errorUserNotFound: "Pengguna tidak ditemukan",
-        errorWrongPassword: "Password salah",
-      },
-      en: {
-        welcomeTitle: "Welcome To TAXI PI",
-        welcomeSubtitle: "By Pioneers From Pioneers",
-        selectLang: "Select Language",
-        selectRole: "Select Role",
-        emailPlaceholder: "Email",
-        passwordPlaceholder: "Password",
-        loginBtn: "Login",
-        registerBtn: "Register",
-        toggleRegisterText: "Register",
-        toggleLoginText: "Login",
-        errorEmptyFields: "Email and password must be filled",
-        errorInvalidEmail: "Invalid email",
-        errorWeakPassword: "Password must be at least 6 characters",
-        errorUserExists: "User already exists",
-        errorUserNotFound: "User not found",
-        errorWrongPassword: "Wrong password",
-      },
+    // Register new user
+    btnRegister.onclick = () => {
+      errorMsg.textContent = "";
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const role = roleSelect.value;
+      if (!email || !password || !role) {
+        errorMsg.textContent = "Please fill all fields.";
+        return;
+      }
+      if (password.length < 6) {
+        errorMsg.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Save user role & initial balance (0)
+          const userId = userCredential.user.uid;
+          set(ref(db, "users/" + userId), {
+            email,
+            role,
+            balance: 0,
+            createdAt: Date.now(),
+          });
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          errorMsg.textContent = error.message;
+          console.error("Register error:", error);
+        });
     };
 
-    let lang = localStorage.getItem("taxiPiLang") || "id";
-
-    function updateTexts() {
-      titleEl.textContent = translations[lang].welcomeTitle;
-      welcomeTextEl.textContent = translations[lang].welcomeSubtitle;
-      labelLang.textContent = translations[lang].selectLang;
-      labelRole.textContent = translations[lang].selectRole;
-      emailInput.placeholder = translations[lang].emailPlaceholder;
-      passwordInput.placeholder = translations[lang].passwordPlaceholder;
-      loginBtn.textContent = isRegistering ? translations[lang].registerBtn : translations[lang].loginBtn;
-      toggleRegister.textContent = isRegistering ? translations[lang].toggleLoginText : translations[lang].toggleRegisterText;
-      errorMsg.style.display = "none";
-    }
-
-    langEl.value = lang;
-    langEl.addEventListener("change", () => {
-      lang = langEl.value;
-      localStorage.setItem("taxiPiLang", lang);
-      updateTexts();
-    });
-
-    toggleRegister.addEventListener("click", () => {
-      isRegistering = !isRegistering;
-      updateTexts();
-    });
-
-    function validateEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email);
-    }
-
-    loginBtn.addEventListener("click", () => {
+    // Login existing user
+    btnLogin.onclick = () => {
+      errorMsg.textContent = "";
       const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-      const role = roleEl.value;
+      const password = passwordInput.value;
 
       if (!email || !password) {
-        errorMsg.textContent = translations[lang].errorEmptyFields;
-        errorMsg.style.display = "block";
-        return;
-      }
-      if (!validateEmail(email)) {
-        errorMsg.textContent = translations[lang].errorInvalidEmail;
-        errorMsg.style.display = "block";
+        errorMsg.textContent = "Please fill all fields.";
         return;
       }
 
-      errorMsg.style.display = "none";
-
-      if (isRegistering) {
-        if (password.length < 6) {
-          errorMsg.textContent = translations[lang].errorWeakPassword;
-          errorMsg.style.display = "block";
-          return;
-        }
-        createUserWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            // Simpan role default saldo = 0
-            set(ref(database, "users/" + user.uid), {
-              email,
-              role,
-              balance: 0,
-              createdAt: Date.now(),
-            });
-            localStorage.setItem("taxiPiRole", role);
-            window.location.href = "dashboard.html";
-          })
-          .catch((error) => {
-            if (error.code === "auth/email-already-in-use") {
-              errorMsg.textContent = translations[lang].errorUserExists;
-            } else {
-              errorMsg.textContent = error.message;
-            }
-            errorMsg.style.display = "block";
-          });
-      } else {
-        signInWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            localStorage.setItem("taxiPiRole", role);
-            window.location.href = "dashboard.html";
-          })
-          .catch((error) => {
-            if (error.code === "auth/user-not-found") {
-              errorMsg.textContent = translations[lang].errorUserNotFound;
-            } else if (error.code === "auth/wrong-password") {
-              errorMsg.textContent = translations[lang].errorWrongPassword;
-            } else {
-              errorMsg.textContent = error.message;
-            }
-            errorMsg.style.display = "block";
-          });
-      }
-    });
-
-    // Jika sudah login langsung ke dashboard
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.href = "dashboard.html";
-      }
-    });
-
-    updateTexts();
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          errorMsg.textContent = error.message;
+          console.error("Login error:", error);
+        });
+    };
   </script>
 </body>
 </html>
