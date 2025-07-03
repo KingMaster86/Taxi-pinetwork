@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - TAXI PI</title>
+  <meta name="theme-color" content="#5E2B97" />
+  <link rel="manifest" href="manifest.json" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(145deg, #5E2B97, #2c145c);
+      color: white;
+    }
+    .card {
+      background-color: rgba(255,255,255,0.1);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      background-color: #fff;
+      color: #5E2B97;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-4">
+    <h3 class="text-center">👨‍💼 Admin Panel TAXI PI</h3>
+    <div id="admin-content"></div>
+    <div class="text-end">
+      <button class="btn btn-sm btn-warning" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
+      authDomain: "taxi-pi-network.firebaseapp.com",
+      databaseURL: "https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "taxi-pi-network",
+      storageBucket: "taxi-pi-network.appspot.com",
+      messagingSenderId: "424683034285",
+      appId: "1:424683034285:web:78d616a9dd98a78a0cd824",
+      measurementId: "G-62J9SRR509"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const allowedAdmins = [
+      'anangsuharto86@gmail.com',
+      'anangsuharto56@gmail.com'
+    ];
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user || !allowedAdmins.includes(user.email)) {
+        alert('Akses hanya untuk Admin.');
+        return location.href = '/index.html';
+      }
+      loadData();
+    });
+
+    function logout() {
+      firebase.auth().signOut();
+    }
+
+    function loadData() {
+      const container = document.getElementById('admin-content');
+      container.innerHTML = '<p>Memuat data pengguna & transaksi...</p>';
+      firebase.database().ref('users').once('value').then(snapshot => {
+        const users = snapshot.val();
+        container.innerHTML = '';
+        for (const uid in users) {
+          const user = users[uid];
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <strong>${user.name || 'Tanpa Nama'}</strong><br>
+            Email: ${user.email || '-'}<br>
+            Telp: ${user.phone || '-'}<br>
+            Role: <span class="badge">${user.role || 'Tidak Diketahui'}</span><br>
+            Saldo: Rp ${(user.balance || 0).toLocaleString()}<br>
+          `;
+          container.appendChild(card);
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
