@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register TAXI PI</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#5E2B97" />
+  <style>
+    body {
+      background: #5E2B97;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background: rgba(94, 43, 151, 0.85);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, select, button {
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background: #7d56cc;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background: #9271d7;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      text-shadow: 0 0 8px #bb99ff;
+    }
+    #error-msg {
+      color: #ff6b6b;
+      font-weight: 600;
+      min-height: 1.2rem;
+      text-align: center;
+    }
+    #link-login {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    #link-login a {
+      color: #d9b3ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    #link-login a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <form id="register-form" aria-label="Register form TAXI PI">
+    <h1>Register TAXI PI</h1>
+    <input type="email" id="email" placeholder="Email" aria-label="Email" required />
+    <input type="password" id="password" placeholder="Password (min 6)" aria-label="Password" required minlength="6" />
+    <select id="role" aria-label="Select your role" required>
+      <option value="" disabled selected>Pilih peran / Select role</option>
+      <option value="passenger">Penumpang / Passenger</option>
+      <option value="carDriver">Driver Mobil / Car Driver</option>
+      <option value="motorDriver">Driver Sepeda Motor / Motor Driver</option>
+      <option value="courier">Kurir / Courier</option>
+    </select>
+    <button type="submit">Register</button>
+    <div id="error-msg" role="alert" aria-live="assertive"></div>
+    <div id="link-login">Sudah punya akun? <a href="login.html">Login di sini</a></div>
+  </form>
+
+  <script type="module">
+    import { auth, db } from './firebase.js';
+    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
+    import { ref, set } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
+
+    const form = document.getElementById('register-form');
+    const errorMsg = document.getElementById('error-msg');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      errorMsg.textContent = '';
+
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      const role = form.role.value;
+
+      if (!email || !password || !role) {
+        errorMsg.textContent = 'Mohon isi semua bidang.';
+        return;
+      }
+      if (password.length < 6) {
+        errorMsg.textContent = 'Password minimal 6 karakter.';
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+          const userId = userCredential.user.uid;
+          // Simpan data user di Realtime Database
+          set(ref(db, 'users/' + userId), {
+            email,
+            role,
+            balance: 0,
+            createdAt: Date.now(),
+          });
+          // Redirect ke login
+          window.location.href = 'login.html';
+        })
+        .catch(error => {
+          errorMsg.textContent = error.message;
+          console.error('Register error:', error);
+        });
+    });
+  </script>
+</body>
+</html>
