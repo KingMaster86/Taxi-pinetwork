@@ -1,22 +1,22 @@
 {
   "name": "TAXI PI",
   "short_name": "TAXI PI",
-  "start_url": "index.html",
+  "description": "Ride-hailing app by Pioneers From Pioneers",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#5E2B97",
   "theme_color": "#5E2B97",
-  "description": "TAXI PI - Pioneers From Pioneers, Taxi Online PWA",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "lang": "id"
+  ]
 }
