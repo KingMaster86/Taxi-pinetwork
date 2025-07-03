@@ -63,7 +63,7 @@
     <input type="email" id="email" placeholder="Email" aria-label="Email" required />
     <input type="password" id="password" placeholder="Password" aria-label="Password" required minlength="6" />
     <select id="role" aria-label="Select your role" required>
-      <option value="" disabled selected>Pilih peran / Select role</option>
+      <option value="" disabled selected>Pilih peran / Select role (hanya untuk register)</option>
       <option value="passenger">Penumpang / Passenger</option>
       <option value="carDriver">Driver Mobil / Car Driver</option>
       <option value="motorDriver">Driver Sepeda Motor / Motor Driver</option>
@@ -77,7 +77,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
@@ -135,8 +135,8 @@
         });
     };
 
-    // Login existing user
-    btnLogin.onclick = () => {
+    // Login existing user with role-based redirect
+    btnLogin.onclick = async () => {
       errorMsg.textContent = "";
       const email = emailInput.value.trim();
       const password = passwordInput.value;
@@ -146,14 +146,39 @@
         return;
       }
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-          errorMsg.textContent = error.message;
-          console.error("Login error:", error);
-        });
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid;
+        const snapshot = await get(ref(db, "users/" + userId + "/role"));
+        const role = snapshot.val();
+
+        if (!role) {
+          errorMsg.textContent = "User role not found.";
+          await auth.signOut();
+          return;
+        }
+
+        switch (role) {
+          case "passenger":
+            window.location.href = "dashboard-passenger.html";
+            break;
+          case "carDriver":
+            window.location.href = "dashboard-driver-car.html";
+            break;
+          case "motorDriver":
+            window.location.href = "dashboard-driver-motor.html";
+            break;
+          case "courier":
+            window.location.href = "dashboard-courier.html";
+            break;
+          default:
+            errorMsg.textContent = "Unknown user role.";
+            await auth.signOut();
+        }
+      } catch (error) {
+        errorMsg.textContent = error.message;
+        console.error("Login error:", error);
+      }
     };
   </script>
 </body>
