@@ -17,7 +17,7 @@
       height: 100vh;
       margin: 0;
     }
-    #login-form {
+    form {
       background: rgba(94, 43, 151, 0.85);
       padding: 2rem;
       border-radius: 20px;
@@ -27,7 +27,7 @@
       flex-direction: column;
       gap: 1rem;
     }
-    input, button, select {
+    input, select, button {
       padding: 0.7rem 1rem;
       border-radius: 10px;
       border: none;
@@ -55,105 +55,75 @@
       min-height: 1.2rem;
       text-align: center;
     }
+    #link-register {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    #link-register a {
+      color: #d9b3ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    #link-register a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-  <form id="login-form" aria-label="Login or register form for TAXI PI">
+  <form id="login-form" aria-label="Login form TAXI PI">
     <h1>Welcome To TAXI PI</h1>
     <input type="email" id="email" placeholder="Email" aria-label="Email" required />
     <input type="password" id="password" placeholder="Password" aria-label="Password" required minlength="6" />
-    <select id="role" aria-label="Select your role" required>
-      <option value="" disabled selected>Pilih peran / Select role</option>
-      <option value="passenger">Penumpang / Passenger</option>
-      <option value="carDriver">Driver Mobil / Car Driver</option>
-      <option value="motorDriver">Driver Sepeda Motor / Motor Driver</option>
-      <option value="courier">Kurir / Courier</option>
-    </select>
-    <button type="button" id="btn-login">Login</button>
-    <button type="button" id="btn-register">Register</button>
+    <button type="submit">Login</button>
     <div id="error-msg" role="alert" aria-live="assertive"></div>
+    <div id="link-register">Belum punya akun? <a href="register.html">Register di sini</a></div>
   </form>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
+    import { auth, db } from './firebase.js';
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
+    import { ref, get } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
-      authDomain: "taxi-pi-network.firebaseapp.com",
-      databaseURL: "https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "taxi-pi-network",
-      storageBucket: "taxi-pi-network.firebasestorage.app",
-      messagingSenderId: "424683034285",
-      appId: "1:424683034285:web:78d616a9dd98a78a0cd824",
-      measurementId: "G-62J9SRR509",
-    };
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      errorMsg.textContent = '';
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const roleSelect = document.getElementById("role");
-    const errorMsg = document.getElementById("error-msg");
-
-    const btnLogin = document.getElementById("btn-login");
-    const btnRegister = document.getElementById("btn-register");
-
-    // Register new user
-    btnRegister.onclick = () => {
-      errorMsg.textContent = "";
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      const role = roleSelect.value;
-      if (!email || !password || !role) {
-        errorMsg.textContent = "Please fill all fields.";
-        return;
-      }
-      if (password.length < 6) {
-        errorMsg.textContent = "Password must be at least 6 characters.";
-        return;
-      }
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const userId = userCredential.user.uid;
-          set(ref(db, "users/" + userId), {
-            email,
-            role,
-            balance: 0,
-            createdAt: Date.now(),
-          });
-          window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-          errorMsg.textContent = error.message;
-          console.error("Register error:", error);
-        });
-    };
-
-    // Login existing user
-    btnLogin.onclick = () => {
-      errorMsg.textContent = "";
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+      const email = form.email.value.trim();
+      const password = form.password.value;
 
       if (!email || !password) {
-        errorMsg.textContent = "Please fill all fields.";
+        errorMsg.textContent = 'Mohon isi email dan password.';
         return;
       }
 
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-          errorMsg.textContent = error.message;
-          console.error("Login error:", error);
-        });
-    };
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid;
+        // Ambil role dari Realtime Database
+        const snapshot = await get(ref(db, 'users/' + userId + '/role'));
+        const role = snapshot.val();
+
+        // Redirect ke dashboard sesuai role
+        if (role === 'passenger') {
+          window.location.href = 'dashboard-passenger.html';
+        } else if (role === 'carDriver') {
+          window.location.href = 'dashboard-driver-car.html';
+        } else if (role === 'motorDriver') {
+          window.location.href = 'dashboard-driver-motor.html';
+        } else if (role === 'courier') {
+          window.location.href = 'dashboard-courier.html';
+        } else {
+          errorMsg.textContent = 'Role user tidak dikenal.';
+          await auth.signOut();
+        }
+      } catch (error) {
+        errorMsg.textContent = error.message;
+        console.error('Login error:', error);
+      }
+    });
   </script>
 </body>
 </html>
