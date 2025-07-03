@@ -1,239 +1,157 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>TAXI PI - Dashboard</title>
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#5E2B97" />
-
-<!-- Leaflet CSS (OpenStreetMap) -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-sA+e2LkZY5KnX9q4wJn2IcgBvHZqyk+Oiy5Qf+0do+8="
-  crossorigin=""
-/>
-
-<style>
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #5E2B97, #833AB4);
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-    perspective: 1200px;
-  }
-  #container {
-    background: rgba(70, 25, 110, 0.9);
-    border-radius: 20px;
-    padding: 1rem 2rem;
-    box-shadow: 0 0 30px #833AB4;
-    width: 100%;
-    max-width: 480px;
-    transform-style: preserve-3d;
-    transform: rotateX(7deg) rotateY(-12deg);
-    text-align: center;
-  }
-  h2 {
-    text-shadow: 0 0 10px #9b59b6;
-    margin-bottom: 1rem;
-  }
-  select,
-  button,
-  input[type='text'] {
-    width: 100%;
-    padding: 0.7rem;
-    margin: 0.7rem 0;
-    border-radius: 12px;
-    border: none;
-    font-size: 1rem;
-    font-weight: 700;
-    color: white;
-    background: #7e40bf;
-    box-shadow: inset 0 0 10px #6b1fa8;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  button:hover,
-  select:hover,
-  input[type='text']:hover {
-    background: #9b59b6;
-  }
-  #balance {
-    font-size: 1.1rem;
-    margin: 1rem 0;
-    font-weight: 800;
-    text-shadow: 0 0 6px #b180e6;
-  }
-  #map,
-  #leafletMap {
-    margin-top: 1rem;
-    width: 100%;
-    height: 300px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px #7a40bd;
-  }
-  #tariff {
-    font-weight: 700;
-    margin-top: 1rem;
-    font-size: 1.1rem;
-    color: #d1baff;
-    text-shadow: 0 0 5px #7a40bd;
-  }
-  #orderSection {
-    margin-top: 1rem;
-    text-align: left;
-  }
-  #driverOrdersList {
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #9b59b6;
-    padding: 0.5rem;
-    border-radius: 8px;
-    background: rgba(130, 60, 190, 0.2);
-  }
-  #driverOrdersList div {
-    border-bottom: 1px solid #9b59b6;
-    padding: 0.5rem 0;
-  }
-  #driverOrdersList button {
-    width: auto;
-    padding: 0.4rem 1rem;
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-top: 0.3rem;
-  }
-  #notifPopup {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #833AB4;
-    color: white;
-    padding: 15px 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px #b180e6;
-    z-index: 1000;
-    max-width: 300px;
-    cursor: pointer;
-    user-select: none;
-  }
-  #chatSection {
-    display: none;
-    margin-top: 20px;
-    background: rgba(130, 60, 190, 0.7);
-    border-radius: 12px;
-    padding: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-    font-size: 14px;
-  }
-  #chatMessages {
-    max-height: 220px;
-    overflow-y: auto;
-    padding: 5px;
-    border: 1px solid #9b59b6;
-    border-radius: 8px;
-    background: #6d2db366;
-    color: white;
-  }
-  #historySection {
-    margin-top: 30px;
-    background: rgba(120, 40, 180, 0.8);
-    border-radius: 12px;
-    padding: 10px;
-    max-height: 320px;
-    overflow-y: auto;
-    color: #ddd;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TAXI PI - Login/Register</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#5E2B97" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+    body {
+      margin: 0; 
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #5E2B97, #A475D1);
+      color: white;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1000px;
+    }
+    #container {
+      background: rgba(94,43,151,0.9);
+      padding: 2rem 3rem;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+      width: 320px;
+      text-align: center;
+      transform-style: preserve-3d;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotateX(0deg); }
+      50% { transform: translateY(-15px) rotateX(5deg); }
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px #bb99ff;
+    }
+    p.welcome-text {
+      font-size: 0.9rem;
+      margin-bottom: 1.8rem;
+      font-weight: 500;
+      color: #d9cfff;
+    }
+    label {
+      display: block;
+      margin: 0.7rem 0 0.3rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    select, input {
+      width: 100%;
+      padding: 0.5rem 0.7rem;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.2);
+      background-color: #7d56cc;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    select:hover, input:hover, select:focus, input:focus {
+      background-color: #9271d7;
+    }
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 15px;
+      border: none;
+      background: #a475d1;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px #bb99ff;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #c7a4ff;
+      color: #3b0e5c;
+    }
+    .switch-lang {
+      margin-bottom: 1.2rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: #d9cfff;
+      user-select: none;
+    }
+    .error-msg {
+      color: #ff8080;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    a.switch-to {
+      font-size: 0.85rem;
+      color: #d9cfff;
+      cursor: pointer;
+      text-decoration: underline;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
   <div id="container">
-    <h2 id="title">Pilih Peran / Choose Role</h2>
+    <h1 id="title">Welcome To TAXI PI</h1>
+    <p class="welcome-text" id="welcomeText">By Pioneers From Pioneers</p>
 
-    <select id="languageSelect" aria-label="Select Language">
+    <label for="languageSelect" id="labelLang">Pilih Bahasa / Select Language</label>
+    <select id="languageSelect" aria-label="Language Select">
       <option value="id">Bahasa Indonesia</option>
       <option value="en">English</option>
     </select>
 
-    <select id="roleSelect" aria-label="Select Role">
-      <option value="">-- Pilih Peran / Select Role --</option>
+    <label for="roleSelect" id="labelRole">Pilih Peran / Select Role</label>
+    <select id="roleSelect" aria-label="Role Select">
       <option value="passenger">Penumpang / Passenger</option>
       <option value="carDriver">Driver Mobil / Car Driver</option>
-      <option value="motorDriver">Driver Motor / Motorbike Driver</option>
+      <option value="motorDriver">Driver Sepeda Motor / Motor Driver</option>
       <option value="courier">Kurir / Courier</option>
     </select>
 
-    <select id="mapProviderSelect" aria-label="Select Map Provider">
-      <option value="google">Google Maps</option>
-      <option value="leaflet">OpenStreetMap (Leaflet)</option>
-    </select>
+    <input type="email" id="emailInput" placeholder="Email" autocomplete="username" />
+    <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password" />
 
-    <div id="balance" style="display:none;"></div>
+    <div class="error-msg" id="errorMsg"></div>
 
-    <button id="depositBtn" style="display:none;">Deposit via Stripe</button>
-
-    <div id="tariff"></div>
-
-    <div id="map" style="display:none;"></div>
-    <div id="leafletMap" style="display:none;"></div>
-
-    <div id="orderSection" style="display:none;">
-      <h3 id="orderTitle"></h3>
-
-      <!-- Untuk penumpang -->
-      <div id="passengerOrder" style="display:none;">
-        <input type="text" id="pickup" placeholder="Lokasi Jemput / Pickup Location" />
-        <input type="text" id="destination" placeholder="Tujuan / Destination" />
-        <button id="createOrderBtn">Buat Order / Create Order</button>
-      </div>
-
-      <!-- Untuk driver & kurir -->
-      <div id="driverOrdersList" style="display:none;"></div>
-    </div>
-
-    <button id="logoutBtn" style="margin-top: 1rem; background:#6e2db3;">Logout</button>
-
-    <!-- Notifikasi popup -->
-    <div id="notifPopup">
-      <span id="notifMessage"></span>
-    </div>
-
-    <!-- Chat Section -->
-    <div id="chatSection">
-      <h4 style="margin-top: 0; color:#f0e6ff;">Chat</h4>
-      <div id="chatMessages"></div>
-      <input type="text" id="chatInput" placeholder="Type message..." />
-      <button id="sendChatBtn">Send</button>
-    </div>
-
-    <!-- Riwayat perjalanan -->
-    <div id="historySection" style="display:none;">
-      <h3 id="historyTitle">Riwayat Perjalanan / Trip History</h3>
-      <div id="historyList"></div>
-    </div>
+    <button id="loginBtn">Login</button>
+    <p style="margin-top: 1rem;">
+      <span id="toggleRegister" class="switch-to">Register</span>
+    </p>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+    } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1j2M3Q9vTpkGfTsK48rJ0NrsjvWQsQH1Zmxd9o0M="
-    crossorigin=""
-  ></script>
-
-  <script>
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
       authDomain: "taxi-pi-network.firebaseapp.com",
@@ -242,685 +160,170 @@
       storageBucket: "taxi-pi-network.firebasestorage.app",
       messagingSenderId: "424683034285",
       appId: "1:424683034285:web:78d616a9dd98a78a0cd824",
-      measurementId: "G-62J9SRR509"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const database = firebase.database();
-
-    const languageSelect = document.getElementById("languageSelect");
-    const roleSelect = document.getElementById("roleSelect");
-    const mapProviderSelect = document.getElementById("mapProviderSelect");
-    const balanceEl = document.getElementById("balance");
-    const depositBtn = document.getElementById("depositBtn");
-    const tariffEl = document.getElementById("tariff");
-    const orderSection = document.getElementById("orderSection");
-    const orderTitle = document.getElementById("orderTitle");
-    const passengerOrderDiv = document.getElementById("passengerOrder");
-    const driverOrdersList = document.getElementById("driverOrdersList");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const pickupInput = document.getElementById("pickup");
-    const destinationInput = document.getElementById("destination");
-    const notifPopup = document.getElementById("notifPopup");
-    const notifMessage = document.getElementById("notifMessage");
-    const chatSection = document.getElementById("chatSection");
-    const chatMessages = document.getElementById("chatMessages");
-    const chatInput = document.getElementById("chatInput");
-    const sendChatBtn = document.getElementById("sendChatBtn");
-    const historySection = document.getElementById("historySection");
-    const historyList = document.getElementById("historyList");
-    const historyTitle = document.getElementById("historyTitle");
-
-    const mapDiv = document.getElementById("map");
-    const leafletDiv = document.getElementById("leafletMap");
-
-    // Tarif per KM
-    const tariffs = {
-      carDriver: 3000,
-      motorDriver: 1900,
-      courier: 1700,
+      measurementId: "G-62J9SRR509",
     };
 
-    // Bahasa default
-    let lang = localStorage.getItem("taxiPiLang") || "id";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
 
-    // Role default
-    let currentRole = localStorage.getItem("taxiPiRole") || "";
+    const langEl = document.getElementById("languageSelect");
+    const roleEl = document.getElementById("roleSelect");
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const loginBtn = document.getElementById("loginBtn");
+    const errorMsg = document.getElementById("errorMsg");
+    const toggleRegister = document.getElementById("toggleRegister");
+    const titleEl = document.getElementById("title");
+    const welcomeTextEl = document.getElementById("welcomeText");
+    const labelLang = document.getElementById("labelLang");
+    const labelRole = document.getElementById("labelRole");
 
-    // Map provider default
-    let mapProvider = localStorage.getItem("taxiPiMapProvider") || "google";
+    let isRegistering = false;
 
-    // Penyimpanan state
-    let currentAcceptedOrder = null;
-
-    // Google Maps objects
-    let map, directionsService, directionsRenderer;
-
-    // Leaflet objects
-    let leafletMap, leafletRouteLayer;
-
-    // Text terjemahan
     const translations = {
       id: {
-        welcome: "Welcome To TAXI PI By Pioneers From Pioneers",
-        selectRole: "Pilih Peran",
-        selectLang: "Pilih Bahasa",
-        selectMapProvider: "Pilih Penyedia Peta",
-        noOrders: "Tidak ada order baru saat ini.",
-        loadingOrders: "Memuat order...",
-        acceptOrder: "Terima Order",
-        orderAccepted: "Order diterima!",
-        ongoingOrder: "Order Sedang Berjalan",
-        completeOrder: "Selesaikan Order",
-        orderCreated: "Order berhasil dibuat.",
-        fillPickupDestination: "Mohon isi lokasi jemput dan tujuan.",
-        notLoggedIn: "Anda harus login terlebih dahulu.",
-        orderNotValidComplete: "Order tidak valid untuk diselesaikan.",
-        insufficientBalance: "Saldo tidak cukup untuk potongan biaya.",
-        tripHistory: "Riwayat Perjalanan",
-        noTripHistory: "Tidak ada riwayat perjalanan.",
-        from: "Dari",
-        to: "Ke",
-        fare: "Tarif",
-        date: "Tanggal",
+        welcomeTitle: "Welcome To TAXI PI",
+        welcomeSubtitle: "By Pioneers From Pioneers",
+        selectLang: "Pilih Bahasa / Select Language",
+        selectRole: "Pilih Peran / Select Role",
+        emailPlaceholder: "Email",
+        passwordPlaceholder: "Kata Sandi",
+        loginBtn: "Masuk",
+        registerBtn: "Daftar",
+        toggleRegisterText: "Register",
+        toggleLoginText: "Login",
+        errorEmptyFields: "Email dan password harus diisi",
+        errorInvalidEmail: "Email tidak valid",
+        errorWeakPassword: "Password harus minimal 6 karakter",
+        errorUserExists: "Pengguna sudah terdaftar",
+        errorUserNotFound: "Pengguna tidak ditemukan",
+        errorWrongPassword: "Password salah",
       },
       en: {
-        welcome: "Welcome To TAXI PI By Pioneers From Pioneers",
-        selectRole: "Select Role",
+        welcomeTitle: "Welcome To TAXI PI",
+        welcomeSubtitle: "By Pioneers From Pioneers",
         selectLang: "Select Language",
-        selectMapProvider: "Select Map Provider",
-        noOrders: "No new orders available.",
-        loadingOrders: "Loading orders...",
-        acceptOrder: "Accept Order",
-        orderAccepted: "Order accepted!",
-        ongoingOrder: "Ongoing Order",
-        completeOrder: "Complete Order",
-        orderCreated: "Order created successfully.",
-        fillPickupDestination: "Please fill pickup and destination.",
-        notLoggedIn: "You must log in first.",
-        orderNotValidComplete: "Order not valid for completion.",
-        insufficientBalance: "Insufficient balance for fee deduction.",
-        tripHistory: "Trip History",
-        noTripHistory: "No trip history found.",
-        from: "From",
-        to: "To",
-        fare: "Fare",
-        date: "Date",
+        selectRole: "Select Role",
+        emailPlaceholder: "Email",
+        passwordPlaceholder: "Password",
+        loginBtn: "Login",
+        registerBtn: "Register",
+        toggleRegisterText: "Register",
+        toggleLoginText: "Login",
+        errorEmptyFields: "Email and password must be filled",
+        errorInvalidEmail: "Invalid email",
+        errorWeakPassword: "Password must be at least 6 characters",
+        errorUserExists: "User already exists",
+        errorUserNotFound: "User not found",
+        errorWrongPassword: "Wrong password",
       },
     };
 
-    // --------- Inisialisasi UI ---------
-    function updateTexts() {
-      document.getElementById("title").textContent =
-        lang === "id"
-          ? "Pilih Peran / Choose Role"
-          : "Select Role";
-      document.querySelector("label[for='languageSelect']")?.textContent =
-        translations[lang].selectLang;
-      document.querySelector("label[for='roleSelect']")?.textContent =
-        translations[lang].selectRole;
-      document.querySelector("label[for='mapProviderSelect']")?.textContent =
-        translations[lang].selectMapProvider;
-      depositBtn.textContent = lang === "id" ? "Deposit via Stripe" : "Deposit via Stripe";
-      historyTitle.textContent =
-        lang === "id" ? "Riwayat Perjalanan / Trip History" : "Trip History";
+    let lang = localStorage.getItem("taxiPiLang") || "id";
 
-      // Tariff info
-      if (currentRole === "carDriver") {
-        tariffEl.textContent =
-          lang === "id"
-            ? `Tarif mobil: Rp ${tariffs.carDriver.toLocaleString("id-ID")} / KM`
-            : `Car fare: Rp ${tariffs.carDriver.toLocaleString("en-US")} / KM`;
-      } else if (currentRole === "motorDriver") {
-        tariffEl.textContent =
-          lang === "id"
-            ? `Tarif motor: Rp ${tariffs.motorDriver.toLocaleString("id-ID")} / KM`
-            : `Motorbike fare: Rp ${tariffs.motorDriver.toLocaleString("en-US")} / KM`;
-      } else if (currentRole === "courier") {
-        tariffEl.textContent =
-          lang === "id"
-            ? `Tarif kurir: Rp ${tariffs.courier.toLocaleString("id-ID")} / KM`
-            : `Courier fare: Rp ${tariffs.courier.toLocaleString("en-US")} / KM`;
-      } else {
-        tariffEl.textContent = "";
-      }
+    function updateTexts() {
+      titleEl.textContent = translations[lang].welcomeTitle;
+      welcomeTextEl.textContent = translations[lang].welcomeSubtitle;
+      labelLang.textContent = translations[lang].selectLang;
+      labelRole.textContent = translations[lang].selectRole;
+      emailInput.placeholder = translations[lang].emailPlaceholder;
+      passwordInput.placeholder = translations[lang].passwordPlaceholder;
+      loginBtn.textContent = isRegistering ? translations[lang].registerBtn : translations[lang].loginBtn;
+      toggleRegister.textContent = isRegistering ? translations[lang].toggleLoginText : translations[lang].toggleRegisterText;
+      errorMsg.style.display = "none";
     }
 
-    // Set bahasa & simpan ke localstorage
-    languageSelect.value = lang;
-    roleSelect.value = currentRole;
-    mapProviderSelect.value = mapProvider;
-
-    languageSelect.addEventListener("change", () => {
-      lang = languageSelect.value;
+    langEl.value = lang;
+    langEl.addEventListener("change", () => {
+      lang = langEl.value;
       localStorage.setItem("taxiPiLang", lang);
       updateTexts();
-      loadHistory();
     });
 
-    roleSelect.addEventListener("change", () => {
-      currentRole = roleSelect.value;
-      localStorage.setItem("taxiPiRole", currentRole);
+    toggleRegister.addEventListener("click", () => {
+      isRegistering = !isRegistering;
       updateTexts();
-      checkLoginAndSetup();
     });
 
-    mapProviderSelect.addEventListener("change", () => {
-      mapProvider = mapProviderSelect.value;
-      localStorage.setItem("taxiPiMapProvider", mapProvider);
-      setupMap();
-    });
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
 
-    // --------- Authentication & Setup ---------
-    function checkLoginAndSetup() {
-      if (!auth.currentUser) {
-        alert(lang === "id" ? "Silakan login terlebih dahulu" : "Please login first");
-        window.location.href = "index.html";
+    loginBtn.addEventListener("click", () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      const role = roleEl.value;
+
+      if (!email || !password) {
+        errorMsg.textContent = translations[lang].errorEmptyFields;
+        errorMsg.style.display = "block";
+        return;
+      }
+      if (!validateEmail(email)) {
+        errorMsg.textContent = translations[lang].errorInvalidEmail;
+        errorMsg.style.display = "block";
         return;
       }
 
-      balanceEl.style.display = "block";
-      depositBtn.style.display = "block";
-      orderSection.style.display = "block";
-      historySection.style.display = "block";
+      errorMsg.style.display = "none";
 
-      updateTexts();
-
-      loadBalance(currentRole);
-      if (currentRole === "passenger") {
-        passengerOrderDiv.style.display = "block";
-        driverOrdersList.style.display = "none";
-      } else {
-        passengerOrderDiv.style.display = "none";
-        driverOrdersList.style.display = "block";
-        loadAvailableOrders();
-      }
-
-      setupMap();
-
-      loadHistory();
-
-      listenNotifications(auth.currentUser.uid);
-
-      if (currentRole === "carDriver" || currentRole === "motorDriver" || currentRole === "courier") {
-        loadOngoingOrder(auth.currentUser.uid);
-      }
-    }
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        checkLoginAndSetup();
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-
-    // --------- Load saldo driver ----------
-    function loadBalance(role) {
-      if (!auth.currentUser) return;
-      const uid = auth.currentUser.uid;
-      const balanceRef = database.ref(`balances/${uid}`);
-      balanceRef.on("value", (snapshot) => {
-        let bal = snapshot.val();
-        if (bal === null) bal = 0;
-        balanceEl.textContent =
-          lang === "id"
-            ? `Saldo Anda: Rp ${bal.toLocaleString("id-ID")}`
-            : `Your Balance: Rp ${bal.toLocaleString("en-US")}`;
-      });
-    }
-
-    // --------- Deposit via Stripe ----------
-    depositBtn.addEventListener("click", () => {
-      window.open("https://buy.stripe.com/7sYbJ14Dt9FPaYTdF04ow00", "_blank");
-    });
-
-    // --------- Order creation (penumpang) ----------
-    const createOrderBtn = document.getElementById("createOrderBtn");
-    createOrderBtn.addEventListener("click", () => {
-      if (!auth.currentUser) return alert(translations[lang].notLoggedIn);
-
-      const pickup = pickupInput.value.trim();
-      const destination = destinationInput.value.trim();
-
-      if (!pickup || !destination)
-        return alert(translations[lang].fillPickupDestination);
-
-      // Simulasi jarak 5 KM dan tarif sesuai role penumpang (anggap tarif mobil)
-      let distanceKm = 5;
-      let tariff = tariffs.carDriver * distanceKm; // Tarif mobil default untuk penumpang
-
-      const newOrderRef = database.ref("orders").push();
-      newOrderRef
-        .set({
-          passengerId: auth.currentUser.uid,
-          pickup,
-          destination,
-          distanceKm,
-          tariff,
-          status: "pending",
-          createdAt: Date.now(),
-        })
-        .then(() => {
-          alert(translations[lang].orderCreated);
-          pickupInput.value = "";
-          destinationInput.value = "";
-          loadHistory();
-        })
-        .catch((e) => alert("Error: " + e.message));
-    });
-
-    // --------- Load daftar order (driver & kurir) ----------
-    function loadAvailableOrders() {
-      if (!auth.currentUser) return;
-      driverOrdersList.innerHTML = translations[lang].loadingOrders;
-
-      database
-        .ref("orders")
-        .orderByChild("status")
-        .equalTo("pending")
-        .on("value", (snapshot) => {
-          const orders = snapshot.val();
-          driverOrdersList.innerHTML = "";
-          if (!orders) {
-            driverOrdersList.innerHTML = translations[lang].noOrders;
-            return;
-          }
-
-          for (const key in orders) {
-            const order = orders[key];
-            // Hitung tarif sesuai role driver/kurir
-            let distKm = order.distanceKm || 5;
-            let tariff;
-            if (currentRole === "carDriver") tariff = distKm * tariffs.carDriver;
-            else if (currentRole === "motorDriver") tariff = distKm * tariffs.motorDriver;
-            else if (currentRole === "courier") tariff = distKm * tariffs.courier;
-            else tariff = order.tariff;
-
-            const distText = `${distKm} KM - Rp ${tariff.toLocaleString("id-ID")}`;
-
-            const div = document.createElement("div");
-            div.innerHTML = `
-              <strong>${lang === "id" ? "Jemput:" : "Pickup:"}</strong> ${order.pickup} <br />
-              <strong>${lang === "id" ? "Tujuan:" : "Destination:"}</strong> ${order.destination} <br />
-              <strong>${lang === "id" ? "Tarif:" : "Fare:"}</strong> ${distText}
-            `;
-            const btn = document.createElement("button");
-            btn.textContent = translations[lang].acceptOrder;
-            btn.style.background = "#9b59b6";
-            btn.onclick = () => acceptOrder(key, order, tariff);
-            div.appendChild(btn);
-            driverOrdersList.appendChild(div);
-          }
-        });
-    }
-
-    // --------- Terima order ----------
-    function acceptOrder(orderId, order, tariff) {
-      if (!auth.currentUser) return alert(translations[lang].notLoggedIn);
-
-      const updates = {};
-      updates[`orders/${orderId}/status`] = "accepted";
-      updates[`orders/${orderId}/driverId`] = auth.currentUser.uid;
-      updates[`orders/${orderId}/acceptedAt`] = Date.now();
-      updates[`orders/${orderId}/tariff`] = tariff; // update tarif sesuai perhitungan
-
-      database
-        .ref()
-        .update(updates)
-        .then(() => {
-          alert(translations[lang].orderAccepted);
-          currentAcceptedOrder = { id: orderId, data: { ...order, tariff } };
-          loadAvailableOrders();
-          showCurrentOrder();
-          showRoute(currentAcceptedOrder.data.pickup, currentAcceptedOrder.data.destination);
-        })
-        .catch((e) => alert("Error: " + e.message));
-    }
-
-    // --------- Tampilkan order berjalan ----------
-    function showCurrentOrder() {
-      if (!currentAcceptedOrder) return;
-
-      orderSection.style.display = "block";
-      passengerOrderDiv.style.display = "none";
-      driverOrdersList.style.display = "none";
-
-      orderTitle.textContent = translations[lang].ongoingOrder;
-
-      orderSection.innerHTML = `
-        <p><strong>${lang === "id" ? "Jemput:" : "Pickup:"}</strong> ${currentAcceptedOrder.data.pickup}</p>
-        <p><strong>${lang === "id" ? "Tujuan:" : "Destination:"}</strong> ${currentAcceptedOrder.data.destination}</p>
-        <p><strong>${lang === "id" ? "Tarif:" : "Fare:"}</strong> Rp ${currentAcceptedOrder.data.tariff.toLocaleString("id-ID")}</p>
-        <button id="completeOrderBtn" style="background:#8e44ad; padding: 0.7rem; border:none; border-radius:10px; color:#fff; font-weight:700;">
-          ${translations[lang].completeOrder}
-        </button>
-      `;
-
-      document.getElementById("completeOrderBtn").addEventListener("click", () => {
-        completeOrder(currentAcceptedOrder.id);
-      });
-
-      // Inisiasi chat driver-penumpang
-      initChat(currentAcceptedOrder.data.passengerId, auth.currentUser.uid);
-    }
-
-    // --------- Selesaikan order & potong saldo ----------
-    function completeOrder(orderId) {
-      if (!auth.currentUser) return alert(translations[lang].notLoggedIn);
-
-      database
-        .ref(`orders/${orderId}`)
-        .once("value")
-        .then((snapshot) => {
-          const order = snapshot.val();
-          if (!order) return alert("Order tidak ditemukan");
-
-          if (order.status !== "accepted" || order.driverId !== auth.currentUser.uid) {
-            return alert(translations[lang].orderNotValidComplete);
-          }
-
-          // Potongan 6%
-          const fee = Math.round(order.tariff * 0.06);
-          const balanceRef = database.ref(`balances/${auth.currentUser.uid}`);
-
-          balanceRef.transaction(
-            (currentBalance) => {
-              if (currentBalance === null) return 0; // Jika belum ada saldo, 0
-              if (currentBalance < fee) {
-                alert(translations[lang].insufficientBalance);
-                return; // Batalkan transaksi potong saldo
-              }
-              return currentBalance - fee;
-            },
-            (error, committed, snapshot) => {
-              if (error) {
-                alert("Error potong saldo: " + error.message);
-              } else if (!committed) {
-                // Transaksi dibatalkan karena saldo kurang
-                alert(translations[lang].insufficientBalance);
-              } else {
-                // Update status order selesai
-                database.ref(`orders/${orderId}`).update({
-                  status: "completed",
-                  completedAt: Date.now(),
-                });
-                alert(
-                  lang === "id"
-                    ? `Order selesai, saldo dipotong Rp ${fee.toLocaleString("id-ID")}`
-                    : `Order completed, Rp ${fee.toLocaleString("en-US")} deducted from balance`
-                );
-                currentAcceptedOrder = null;
-                // Tampilkan ulang daftar order untuk driver
-                loadAvailableOrders();
-                orderSection.style.display = "none";
-                passengerOrderDiv.style.display = currentRole === "passenger" ? "block" : "none";
-                driverOrdersList.style.display = currentRole !== "passenger" ? "block" : "none";
-                loadHistory();
-              }
-            }
-          );
-        });
-    }
-
-    // --------- Load ongoing order (jika driver sudah ada order aktif) ----------
-    function loadOngoingOrder(uid) {
-      database
-        .ref("orders")
-        .orderByChild("driverId")
-        .equalTo(uid)
-        .on("value", (snapshot) => {
-          const orders = snapshot.val();
-          if (!orders) {
-            currentAcceptedOrder = null;
-            return;
-          }
-          for (const key in orders) {
-            if (orders[key].status === "accepted") {
-              currentAcceptedOrder = { id: key, data: orders[key] };
-              showCurrentOrder();
-              break;
-            }
-          }
-        });
-    }
-
-    // --------- Notifikasi sederhana ----------
-    function showNotification(message) {
-      notifMessage.textContent = message;
-      notifPopup.style.display = "block";
-      setTimeout(() => {
-        notifPopup.style.display = "none";
-      }, 4000);
-    }
-    notifPopup.addEventListener("click", () => {
-      notifPopup.style.display = "none";
-    });
-
-    // --------- Listen notif order baru (untuk driver) ----------
-    function listenNotifications(uid) {
-      if (currentRole === "passenger") return; // Penumpang gak perlu notif order baru
-
-      database
-        .ref("orders")
-        .orderByChild("status")
-        .equalTo("pending")
-        .on("child_added", (snapshot) => {
-          showNotification(lang === "id" ? "Order baru tersedia!" : "New order available!");
-          loadAvailableOrders();
-        });
-    }
-
-    // --------- Chat realtime driver & penumpang ----------
-    let chatRef = null;
-    function initChat(passengerId, driverId) {
-      chatSection.style.display = "block";
-      chatMessages.innerHTML = "";
-
-      if (chatRef) chatRef.off();
-
-      const chatId =
-        passengerId < driverId ? passengerId + "_" + driverId : driverId + "_" + passengerId;
-
-      chatRef = database.ref(`chats/${chatId}`);
-
-      chatRef.on("child_added", (snap) => {
-        const msg = snap.val();
-        const fromMe = msg.sender === auth.currentUser.uid;
-        const msgEl = document.createElement("div");
-        msgEl.style.textAlign = fromMe ? "right" : "left";
-        msgEl.style.margin = "5px 0";
-        msgEl.textContent = msg.text;
-        chatMessages.appendChild(msgEl);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
-    }
-
-    sendChatBtn.addEventListener("click", () => {
-      const text = chatInput.value.trim();
-      if (!text || !chatRef) return;
-      chatRef.push({
-        sender: auth.currentUser.uid,
-        text,
-        timestamp: Date.now(),
-      });
-      chatInput.value = "";
-    });
-
-    // --------- Load riwayat perjalanan ----------
-    function loadHistory() {
-      if (!auth.currentUser) return;
-      const uid = auth.currentUser.uid;
-      historyList.innerHTML = translations[lang].loadingOrders;
-      let ref;
-      if (currentRole === "passenger") {
-        ref = database.ref("orders").orderByChild("passengerId").equalTo(uid);
-      } else {
-        ref = database.ref("orders").orderByChild("driverId").equalTo(uid);
-      }
-      ref.once("value").then((snapshot) => {
-        const orders = snapshot.val();
-        if (!orders) {
-          historyList.innerHTML = translations[lang].noTripHistory;
+      if (isRegistering) {
+        if (password.length < 6) {
+          errorMsg.textContent = translations[lang].errorWeakPassword;
+          errorMsg.style.display = "block";
           return;
         }
-        historyList.innerHTML = "";
-        for (const key in orders) {
-          const o = orders[key];
-          if (o.status !== "completed") continue;
-          const div = document.createElement("div");
-          const date = new Date(o.completedAt).toLocaleDateString(lang === "id" ? "id-ID" : "en-US");
-          div.innerHTML = `
-            <strong>${translations[lang].from}:</strong> ${o.pickup} <br />
-            <strong>${translations[lang].to}:</strong> ${o.destination} <br />
-            <strong>${translations[lang].fare}:</strong> Rp ${o.tariff.toLocaleString(
-              lang === "id" ? "id-ID" : "en-US"
-            )} <br />
-            <strong>${translations[lang].date}:</strong> ${date}
-          `;
-          historyList.appendChild(div);
-        }
-      });
-    }
-
-    // --------- Peta: Google Maps & Leaflet Setup ----------
-    function setupMap() {
-      if (mapProvider === "google") {
-        leafletDiv.style.display = "none";
-        mapDiv.style.display = "block";
-        if (!window.google || !window.google.maps) {
-          // Load Google Maps API script
-          const script = document.createElement("script");
-          script.src =
-            "https://maps.googleapis.com/maps/api/js?key=AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw&libraries=places";
-          script.async = true;
-          script.defer = true;
-          script.onload = initGoogleMap;
-          document.head.appendChild(script);
-        } else {
-          initGoogleMap();
-        }
-      } else if (mapProvider === "leaflet") {
-        mapDiv.style.display = "none";
-        leafletDiv.style.display = "block";
-        if (!leafletMap) initLeafletMap();
-      }
-    }
-
-    // Google Maps init
-    function initGoogleMap() {
-      if (map) return; // sudah inisialisasi
-      map = new google.maps.Map(mapDiv, {
-        center: { lat: -6.200000, lng: 106.816666 }, // Jakarta default
-        zoom: 12,
-        disableDefaultUI: true,
-        styles: [
-          { elementType: "geometry", stylers: [{ color: "#5E2B97" }] },
-          { elementType: "labels.text.stroke", stylers: [{ color: "#5E2B97" }] },
-          { elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] },
-          {
-            featureType: "administrative.locality",
-            elementType: "labels.text.fill",
-            stylers: [{ color: "#b180e6" }],
-          },
-          {
-            featureType: "poi",
-            elementType: "labels.text.fill",
-            stylers: [{ color: "#b180e6" }],
-          },
-          {
-            featureType: "road",
-            elementType: "geometry",
-            stylers: [{ color: "#6a4cb7" }],
-          },
-          {
-            featureType: "road",
-            elementType: "labels.text.fill",
-            stylers: [{ color: "#d1baff" }],
-          },
-          {
-            featureType: "transit",
-            elementType: "geometry",
-            stylers: [{ color: "#7a40bd" }],
-          },
-          {
-            featureType: "water",
-            elementType: "geometry",
-            stylers: [{ color: "#482a70" }],
-          },
-        ],
-      });
-      directionsService = new google.maps.DirectionsService();
-      directionsRenderer = new google.maps.DirectionsRenderer({ map });
-    }
-
-    // Leaflet init
-    function initLeafletMap() {
-      leafletMap = L.map(leafletDiv).setView([-6.200000, 106.816666], 12);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(leafletMap);
-      leafletRouteLayer = L.layerGroup().addTo(leafletMap);
-    }
-
-    // Tampilkan rute
-    function showRoute(pickup, destination) {
-      if (!pickup || !destination) return;
-      if (mapProvider === "google" && map && directionsService && directionsRenderer) {
-        directionsRenderer.setMap(map);
-        directionsService.route(
-          {
-            origin: pickup,
-            destination: destination,
-            travelMode: google.maps.TravelMode.DRIVING,
-          },
-          (result, status) => {
-            if (status === "OK") {
-              directionsRenderer.setDirections(result);
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            // Simpan role default saldo = 0
+            set(ref(database, "users/" + user.uid), {
+              email,
+              role,
+              balance: 0,
+              createdAt: Date.now(),
+            });
+            localStorage.setItem("taxiPiRole", role);
+            window.location.href = "dashboard.html";
+          })
+          .catch((error) => {
+            if (error.code === "auth/email-already-in-use") {
+              errorMsg.textContent = translations[lang].errorUserExists;
             } else {
-              alert("Gagal menampilkan rute: " + status);
+              errorMsg.textContent = error.message;
             }
-          }
-        );
-      } else if (mapProvider === "leaflet" && leafletMap) {
-        leafletRouteLayer.clearLayers();
-        // Leaflet tidak punya service route resmi gratis,
-        // Kita bisa tampilkan marker saja sebagai alternatif
-        L.marker(getLatLngFromString(pickup)).addTo(leafletRouteLayer).bindPopup("Jemput");
-        L.marker(getLatLngFromString(destination)).addTo(leafletRouteLayer).bindPopup("Tujuan");
-        leafletMap.fitBounds([
-          getLatLngFromString(pickup),
-          getLatLngFromString(destination),
-        ]);
+            errorMsg.style.display = "block";
+          });
+      } else {
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            localStorage.setItem("taxiPiRole", role);
+            window.location.href = "dashboard.html";
+          })
+          .catch((error) => {
+            if (error.code === "auth/user-not-found") {
+              errorMsg.textContent = translations[lang].errorUserNotFound;
+            } else if (error.code === "auth/wrong-password") {
+              errorMsg.textContent = translations[lang].errorWrongPassword;
+            } else {
+              errorMsg.textContent = error.message;
+            }
+            errorMsg.style.display = "block";
+          });
       }
-    }
-
-    // Fungsi bantu konversi string ke latlng (untuk Leaflet)
-    // Karena kita menggunakan alamat string saja, sementara leaflet butuh latlng, 
-    // kita buat stub statis: untuk demo ini anggap lokasi Jakarta
-    function getLatLngFromString(str) {
-      // Di sini harusnya pakai geocoding service,
-      // tapi karena tanpa API kita pakai dummy koordinat
-      return [-6.200000 + Math.random() * 0.01, 106.816666 + Math.random() * 0.01];
-    }
-
-    // Tombol Logout
-    logoutBtn.addEventListener("click", () => {
-      auth.signOut().then(() => {
-        window.location.href = "index.html";
-      });
     });
 
-    // Inisialisasi UI
-    updateTexts();
-    checkLoginAndSetup();
-    setupMap();
+    // Jika sudah login langsung ke dashboard
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "dashboard.html";
+      }
+    });
 
-    // Register Service Worker untuk PWA
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/service-worker.js");
-    }
+    updateTexts();
   </script>
 </body>
 </html>
