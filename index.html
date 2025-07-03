@@ -1,82 +1,223 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TAXI PI - Welcome</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#5E2B97" />
-  <style>
-    /* Warna ungu dominan & efek 3D sederhana */
-    body {
-      margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #5E2B97, #833AB4);
-      color: white;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100vh;
-      perspective: 1200px;
-    }
-    .container {
-      background: rgba(70, 25, 110, 0.85);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 0 30px #833AB4;
-      transform-style: preserve-3d;
-      transform: rotateX(8deg) rotateY(-10deg);
-      width: 320px;
-      text-align: center;
-    }
-    h1 {
-      font-weight: 900;
-      text-shadow: 0 0 10px #9b59b6;
-      margin-bottom: 1rem;
-    }
-    select, input[type="email"], input[type="password"], button {
-      width: 100%;
-      padding: 0.6rem;
-      margin: 0.6rem 0;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      box-shadow: inset 0 0 8px #6b1fa8;
-      background-color: #7e40bf;
-      color: white;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #9b59b6;
-      cursor: pointer;
-    }
-    #message {
-      font-size: 0.9rem;
-      margin: 0.5rem 0;
-      min-height: 1.2em;
-    }
-    .lang-switch {
-      margin-bottom: 1rem;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TAXI PI - Dashboard</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#5E2B97" />
+
+<!-- Leaflet CSS (OpenStreetMap) -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-sA+e2LkZY5KnX9q4wJn2IcgBvHZqyk+Oiy5Qf+0do+8="
+  crossorigin=""
+/>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #5E2B97, #833AB4);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    perspective: 1200px;
+  }
+  #container {
+    background: rgba(70, 25, 110, 0.9);
+    border-radius: 20px;
+    padding: 1rem 2rem;
+    box-shadow: 0 0 30px #833AB4;
+    width: 100%;
+    max-width: 480px;
+    transform-style: preserve-3d;
+    transform: rotateX(7deg) rotateY(-12deg);
+    text-align: center;
+  }
+  h2 {
+    text-shadow: 0 0 10px #9b59b6;
+    margin-bottom: 1rem;
+  }
+  select,
+  button,
+  input[type='text'] {
+    width: 100%;
+    padding: 0.7rem;
+    margin: 0.7rem 0;
+    border-radius: 12px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    background: #7e40bf;
+    box-shadow: inset 0 0 10px #6b1fa8;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover,
+  select:hover,
+  input[type='text']:hover {
+    background: #9b59b6;
+  }
+  #balance {
+    font-size: 1.1rem;
+    margin: 1rem 0;
+    font-weight: 800;
+    text-shadow: 0 0 6px #b180e6;
+  }
+  #map,
+  #leafletMap {
+    margin-top: 1rem;
+    width: 100%;
+    height: 300px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px #7a40bd;
+  }
+  #tariff {
+    font-weight: 700;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: #d1baff;
+    text-shadow: 0 0 5px #7a40bd;
+  }
+  #orderSection {
+    margin-top: 1rem;
+    text-align: left;
+  }
+  #driverOrdersList {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #9b59b6;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background: rgba(130, 60, 190, 0.2);
+  }
+  #driverOrdersList div {
+    border-bottom: 1px solid #9b59b6;
+    padding: 0.5rem 0;
+  }
+  #driverOrdersList button {
+    width: auto;
+    padding: 0.4rem 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+  #notifPopup {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #833AB4;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #b180e6;
+    z-index: 1000;
+    max-width: 300px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #chatSection {
+    display: none;
+    margin-top: 20px;
+    background: rgba(130, 60, 190, 0.7);
+    border-radius: 12px;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+  }
+  #chatMessages {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid #9b59b6;
+    border-radius: 8px;
+    background: #6d2db366;
+    color: white;
+  }
+  #historySection {
+    margin-top: 30px;
+    background: rgba(120, 40, 180, 0.8);
+    border-radius: 12px;
+    padding: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+    color: #ddd;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1 id="title">Welcome To TAXI PI By Pioneers From Pioneers</h1>
+  <div id="container">
+    <h2 id="title">Pilih Peran / Choose Role</h2>
 
-    <div class="lang-switch">
-      <select id="languageSelect" aria-label="Select Language">
-        <option value="id">Bahasa Indonesia</option>
-        <option value="en">English</option>
-      </select>
+    <select id="languageSelect" aria-label="Select Language">
+      <option value="id">Bahasa Indonesia</option>
+      <option value="en">English</option>
+    </select>
+
+    <select id="roleSelect" aria-label="Select Role">
+      <option value="">-- Pilih Peran / Select Role --</option>
+      <option value="passenger">Penumpang / Passenger</option>
+      <option value="carDriver">Driver Mobil / Car Driver</option>
+      <option value="motorDriver">Driver Motor / Motorbike Driver</option>
+      <option value="courier">Kurir / Courier</option>
+    </select>
+
+    <select id="mapProviderSelect" aria-label="Select Map Provider">
+      <option value="google">Google Maps</option>
+      <option value="leaflet">OpenStreetMap (Leaflet)</option>
+    </select>
+
+    <div id="balance" style="display:none;"></div>
+
+    <button id="depositBtn" style="display:none;">Deposit via Stripe</button>
+
+    <div id="tariff"></div>
+
+    <div id="map" style="display:none;"></div>
+    <div id="leafletMap" style="display:none;"></div>
+
+    <div id="orderSection" style="display:none;">
+      <h3 id="orderTitle"></h3>
+
+      <!-- Untuk penumpang -->
+      <div id="passengerOrder" style="display:none;">
+        <input type="text" id="pickup" placeholder="Lokasi Jemput / Pickup Location" />
+        <input type="text" id="destination" placeholder="Tujuan / Destination" />
+        <button id="createOrderBtn">Buat Order / Create Order</button>
+      </div>
+
+      <!-- Untuk driver & kurir -->
+      <div id="driverOrdersList" style="display:none;"></div>
     </div>
 
-    <input type="email" id="email" placeholder="Email" autocomplete="username" />
-    <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
+    <button id="logoutBtn" style="margin-top: 1rem; background:#6e2db3;">Logout</button>
 
-    <button id="loginBtn">Login</button>
-    <button id="registerBtn">Register</button>
+    <!-- Notifikasi popup -->
+    <div id="notifPopup">
+      <span id="notifMessage"></span>
+    </div>
 
-    <div id="message"></div>
+    <!-- Chat Section -->
+    <div id="chatSection">
+      <h4 style="margin-top: 0; color:#f0e6ff;">Chat</h4>
+      <div id="chatMessages"></div>
+      <input type="text" id="chatInput" placeholder="Type message..." />
+      <button id="sendChatBtn">Send</button>
+    </div>
+
+    <!-- Riwayat perjalanan -->
+    <div id="historySection" style="display:none;">
+      <h3 id="historyTitle">Riwayat Perjalanan / Trip History</h3>
+      <div id="historyList"></div>
+    </div>
   </div>
 
   <!-- Firebase SDK -->
@@ -84,8 +225,12 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-  <!-- Google Maps API -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw&libraries=places"></script>
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1j2M3Q9vTpkGfTsK48rJ0NrsjvWQsQH1Zmxd9o0M="
+    crossorigin=""
+  ></script>
 
   <script>
     // Firebase config
@@ -100,103 +245,681 @@
       measurementId: "G-62J9SRR509"
     };
     firebase.initializeApp(firebaseConfig);
-
     const auth = firebase.auth();
     const database = firebase.database();
 
-    // Language dictionary
+    const languageSelect = document.getElementById("languageSelect");
+    const roleSelect = document.getElementById("roleSelect");
+    const mapProviderSelect = document.getElementById("mapProviderSelect");
+    const balanceEl = document.getElementById("balance");
+    const depositBtn = document.getElementById("depositBtn");
+    const tariffEl = document.getElementById("tariff");
+    const orderSection = document.getElementById("orderSection");
+    const orderTitle = document.getElementById("orderTitle");
+    const passengerOrderDiv = document.getElementById("passengerOrder");
+    const driverOrdersList = document.getElementById("driverOrdersList");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const pickupInput = document.getElementById("pickup");
+    const destinationInput = document.getElementById("destination");
+    const notifPopup = document.getElementById("notifPopup");
+    const notifMessage = document.getElementById("notifMessage");
+    const chatSection = document.getElementById("chatSection");
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const sendChatBtn = document.getElementById("sendChatBtn");
+    const historySection = document.getElementById("historySection");
+    const historyList = document.getElementById("historyList");
+    const historyTitle = document.getElementById("historyTitle");
+
+    const mapDiv = document.getElementById("map");
+    const leafletDiv = document.getElementById("leafletMap");
+
+    // Tarif per KM
+    const tariffs = {
+      carDriver: 3000,
+      motorDriver: 1900,
+      courier: 1700,
+    };
+
+    // Bahasa default
+    let lang = localStorage.getItem("taxiPiLang") || "id";
+
+    // Role default
+    let currentRole = localStorage.getItem("taxiPiRole") || "";
+
+    // Map provider default
+    let mapProvider = localStorage.getItem("taxiPiMapProvider") || "google";
+
+    // Penyimpanan state
+    let currentAcceptedOrder = null;
+
+    // Google Maps objects
+    let map, directionsService, directionsRenderer;
+
+    // Leaflet objects
+    let leafletMap, leafletRouteLayer;
+
+    // Text terjemahan
     const translations = {
       id: {
         welcome: "Welcome To TAXI PI By Pioneers From Pioneers",
-        email: "Email",
-        password: "Password",
-        login: "Masuk",
-        register: "Daftar",
-        msgLoginSuccess: "Berhasil masuk!",
-        msgRegisterSuccess: "Berhasil daftar! Silakan login.",
-        msgError: "Terjadi kesalahan: ",
+        selectRole: "Pilih Peran",
+        selectLang: "Pilih Bahasa",
+        selectMapProvider: "Pilih Penyedia Peta",
+        noOrders: "Tidak ada order baru saat ini.",
+        loadingOrders: "Memuat order...",
+        acceptOrder: "Terima Order",
+        orderAccepted: "Order diterima!",
+        ongoingOrder: "Order Sedang Berjalan",
+        completeOrder: "Selesaikan Order",
+        orderCreated: "Order berhasil dibuat.",
+        fillPickupDestination: "Mohon isi lokasi jemput dan tujuan.",
+        notLoggedIn: "Anda harus login terlebih dahulu.",
+        orderNotValidComplete: "Order tidak valid untuk diselesaikan.",
+        insufficientBalance: "Saldo tidak cukup untuk potongan biaya.",
+        tripHistory: "Riwayat Perjalanan",
+        noTripHistory: "Tidak ada riwayat perjalanan.",
+        from: "Dari",
+        to: "Ke",
+        fare: "Tarif",
+        date: "Tanggal",
       },
       en: {
         welcome: "Welcome To TAXI PI By Pioneers From Pioneers",
-        email: "Email",
-        password: "Password",
-        login: "Login",
-        register: "Register",
-        msgLoginSuccess: "Login successful!",
-        msgRegisterSuccess: "Registered successfully! Please login.",
-        msgError: "Error occurred: ",
-      }
+        selectRole: "Select Role",
+        selectLang: "Select Language",
+        selectMapProvider: "Select Map Provider",
+        noOrders: "No new orders available.",
+        loadingOrders: "Loading orders...",
+        acceptOrder: "Accept Order",
+        orderAccepted: "Order accepted!",
+        ongoingOrder: "Ongoing Order",
+        completeOrder: "Complete Order",
+        orderCreated: "Order created successfully.",
+        fillPickupDestination: "Please fill pickup and destination.",
+        notLoggedIn: "You must log in first.",
+        orderNotValidComplete: "Order not valid for completion.",
+        insufficientBalance: "Insufficient balance for fee deduction.",
+        tripHistory: "Trip History",
+        noTripHistory: "No trip history found.",
+        from: "From",
+        to: "To",
+        fare: "Fare",
+        date: "Date",
+      },
     };
 
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    const messageEl = document.getElementById('message');
-    const languageSelect = document.getElementById('languageSelect');
-    const titleEl = document.getElementById('title');
+    // --------- Inisialisasi UI ---------
+    function updateTexts() {
+      document.getElementById("title").textContent =
+        lang === "id"
+          ? "Pilih Peran / Choose Role"
+          : "Select Role";
+      document.querySelector("label[for='languageSelect']")?.textContent =
+        translations[lang].selectLang;
+      document.querySelector("label[for='roleSelect']")?.textContent =
+        translations[lang].selectRole;
+      document.querySelector("label[for='mapProviderSelect']")?.textContent =
+        translations[lang].selectMapProvider;
+      depositBtn.textContent = lang === "id" ? "Deposit via Stripe" : "Deposit via Stripe";
+      historyTitle.textContent =
+        lang === "id" ? "Riwayat Perjalanan / Trip History" : "Trip History";
 
-    // Change UI language
-    function changeLanguage(lang) {
-      titleEl.textContent = translations[lang].welcome;
-      emailInput.placeholder = translations[lang].email;
-      passwordInput.placeholder = translations[lang].password;
-      loginBtn.textContent = translations[lang].login;
-      registerBtn.textContent = translations[lang].register;
-      messageEl.textContent = "";
+      // Tariff info
+      if (currentRole === "carDriver") {
+        tariffEl.textContent =
+          lang === "id"
+            ? `Tarif mobil: Rp ${tariffs.carDriver.toLocaleString("id-ID")} / KM`
+            : `Car fare: Rp ${tariffs.carDriver.toLocaleString("en-US")} / KM`;
+      } else if (currentRole === "motorDriver") {
+        tariffEl.textContent =
+          lang === "id"
+            ? `Tarif motor: Rp ${tariffs.motorDriver.toLocaleString("id-ID")} / KM`
+            : `Motorbike fare: Rp ${tariffs.motorDriver.toLocaleString("en-US")} / KM`;
+      } else if (currentRole === "courier") {
+        tariffEl.textContent =
+          lang === "id"
+            ? `Tarif kurir: Rp ${tariffs.courier.toLocaleString("id-ID")} / KM`
+            : `Courier fare: Rp ${tariffs.courier.toLocaleString("en-US")} / KM`;
+      } else {
+        tariffEl.textContent = "";
+      }
     }
 
-    languageSelect.addEventListener('change', e => {
-      changeLanguage(e.target.value);
+    // Set bahasa & simpan ke localstorage
+    languageSelect.value = lang;
+    roleSelect.value = currentRole;
+    mapProviderSelect.value = mapProvider;
+
+    languageSelect.addEventListener("change", () => {
+      lang = languageSelect.value;
+      localStorage.setItem("taxiPiLang", lang);
+      updateTexts();
+      loadHistory();
     });
 
-    // Default language
-    changeLanguage(languageSelect.value);
+    roleSelect.addEventListener("change", () => {
+      currentRole = roleSelect.value;
+      localStorage.setItem("taxiPiRole", currentRole);
+      updateTexts();
+      checkLoginAndSetup();
+    });
 
-    // Register user
-    registerBtn.addEventListener('click', () => {
-      const email = emailInput.value.trim();
-      const pass = passwordInput.value;
-      if(!email || !pass) {
-        messageEl.textContent = "Please enter email and password.";
+    mapProviderSelect.addEventListener("change", () => {
+      mapProvider = mapProviderSelect.value;
+      localStorage.setItem("taxiPiMapProvider", mapProvider);
+      setupMap();
+    });
+
+    // --------- Authentication & Setup ---------
+    function checkLoginAndSetup() {
+      if (!auth.currentUser) {
+        alert(lang === "id" ? "Silakan login terlebih dahulu" : "Please login first");
+        window.location.href = "index.html";
         return;
       }
-      auth.createUserWithEmailAndPassword(email, pass)
-      .then(userCredential => {
-        messageEl.textContent = translations[languageSelect.value].msgRegisterSuccess;
-      })
-      .catch(error => {
-        messageEl.textContent = translations[languageSelect.value].msgError + error.message;
+
+      balanceEl.style.display = "block";
+      depositBtn.style.display = "block";
+      orderSection.style.display = "block";
+      historySection.style.display = "block";
+
+      updateTexts();
+
+      loadBalance(currentRole);
+      if (currentRole === "passenger") {
+        passengerOrderDiv.style.display = "block";
+        driverOrdersList.style.display = "none";
+      } else {
+        passengerOrderDiv.style.display = "none";
+        driverOrdersList.style.display = "block";
+        loadAvailableOrders();
+      }
+
+      setupMap();
+
+      loadHistory();
+
+      listenNotifications(auth.currentUser.uid);
+
+      if (currentRole === "carDriver" || currentRole === "motorDriver" || currentRole === "courier") {
+        loadOngoingOrder(auth.currentUser.uid);
+      }
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        checkLoginAndSetup();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // --------- Load saldo driver ----------
+    function loadBalance(role) {
+      if (!auth.currentUser) return;
+      const uid = auth.currentUser.uid;
+      const balanceRef = database.ref(`balances/${uid}`);
+      balanceRef.on("value", (snapshot) => {
+        let bal = snapshot.val();
+        if (bal === null) bal = 0;
+        balanceEl.textContent =
+          lang === "id"
+            ? `Saldo Anda: Rp ${bal.toLocaleString("id-ID")}`
+            : `Your Balance: Rp ${bal.toLocaleString("en-US")}`;
+      });
+    }
+
+    // --------- Deposit via Stripe ----------
+    depositBtn.addEventListener("click", () => {
+      window.open("https://buy.stripe.com/7sYbJ14Dt9FPaYTdF04ow00", "_blank");
+    });
+
+    // --------- Order creation (penumpang) ----------
+    const createOrderBtn = document.getElementById("createOrderBtn");
+    createOrderBtn.addEventListener("click", () => {
+      if (!auth.currentUser) return alert(translations[lang].notLoggedIn);
+
+      const pickup = pickupInput.value.trim();
+      const destination = destinationInput.value.trim();
+
+      if (!pickup || !destination)
+        return alert(translations[lang].fillPickupDestination);
+
+      // Simulasi jarak 5 KM dan tarif sesuai role penumpang (anggap tarif mobil)
+      let distanceKm = 5;
+      let tariff = tariffs.carDriver * distanceKm; // Tarif mobil default untuk penumpang
+
+      const newOrderRef = database.ref("orders").push();
+      newOrderRef
+        .set({
+          passengerId: auth.currentUser.uid,
+          pickup,
+          destination,
+          distanceKm,
+          tariff,
+          status: "pending",
+          createdAt: Date.now(),
+        })
+        .then(() => {
+          alert(translations[lang].orderCreated);
+          pickupInput.value = "";
+          destinationInput.value = "";
+          loadHistory();
+        })
+        .catch((e) => alert("Error: " + e.message));
+    });
+
+    // --------- Load daftar order (driver & kurir) ----------
+    function loadAvailableOrders() {
+      if (!auth.currentUser) return;
+      driverOrdersList.innerHTML = translations[lang].loadingOrders;
+
+      database
+        .ref("orders")
+        .orderByChild("status")
+        .equalTo("pending")
+        .on("value", (snapshot) => {
+          const orders = snapshot.val();
+          driverOrdersList.innerHTML = "";
+          if (!orders) {
+            driverOrdersList.innerHTML = translations[lang].noOrders;
+            return;
+          }
+
+          for (const key in orders) {
+            const order = orders[key];
+            // Hitung tarif sesuai role driver/kurir
+            let distKm = order.distanceKm || 5;
+            let tariff;
+            if (currentRole === "carDriver") tariff = distKm * tariffs.carDriver;
+            else if (currentRole === "motorDriver") tariff = distKm * tariffs.motorDriver;
+            else if (currentRole === "courier") tariff = distKm * tariffs.courier;
+            else tariff = order.tariff;
+
+            const distText = `${distKm} KM - Rp ${tariff.toLocaleString("id-ID")}`;
+
+            const div = document.createElement("div");
+            div.innerHTML = `
+              <strong>${lang === "id" ? "Jemput:" : "Pickup:"}</strong> ${order.pickup} <br />
+              <strong>${lang === "id" ? "Tujuan:" : "Destination:"}</strong> ${order.destination} <br />
+              <strong>${lang === "id" ? "Tarif:" : "Fare:"}</strong> ${distText}
+            `;
+            const btn = document.createElement("button");
+            btn.textContent = translations[lang].acceptOrder;
+            btn.style.background = "#9b59b6";
+            btn.onclick = () => acceptOrder(key, order, tariff);
+            div.appendChild(btn);
+            driverOrdersList.appendChild(div);
+          }
+        });
+    }
+
+    // --------- Terima order ----------
+    function acceptOrder(orderId, order, tariff) {
+      if (!auth.currentUser) return alert(translations[lang].notLoggedIn);
+
+      const updates = {};
+      updates[`orders/${orderId}/status`] = "accepted";
+      updates[`orders/${orderId}/driverId`] = auth.currentUser.uid;
+      updates[`orders/${orderId}/acceptedAt`] = Date.now();
+      updates[`orders/${orderId}/tariff`] = tariff; // update tarif sesuai perhitungan
+
+      database
+        .ref()
+        .update(updates)
+        .then(() => {
+          alert(translations[lang].orderAccepted);
+          currentAcceptedOrder = { id: orderId, data: { ...order, tariff } };
+          loadAvailableOrders();
+          showCurrentOrder();
+          showRoute(currentAcceptedOrder.data.pickup, currentAcceptedOrder.data.destination);
+        })
+        .catch((e) => alert("Error: " + e.message));
+    }
+
+    // --------- Tampilkan order berjalan ----------
+    function showCurrentOrder() {
+      if (!currentAcceptedOrder) return;
+
+      orderSection.style.display = "block";
+      passengerOrderDiv.style.display = "none";
+      driverOrdersList.style.display = "none";
+
+      orderTitle.textContent = translations[lang].ongoingOrder;
+
+      orderSection.innerHTML = `
+        <p><strong>${lang === "id" ? "Jemput:" : "Pickup:"}</strong> ${currentAcceptedOrder.data.pickup}</p>
+        <p><strong>${lang === "id" ? "Tujuan:" : "Destination:"}</strong> ${currentAcceptedOrder.data.destination}</p>
+        <p><strong>${lang === "id" ? "Tarif:" : "Fare:"}</strong> Rp ${currentAcceptedOrder.data.tariff.toLocaleString("id-ID")}</p>
+        <button id="completeOrderBtn" style="background:#8e44ad; padding: 0.7rem; border:none; border-radius:10px; color:#fff; font-weight:700;">
+          ${translations[lang].completeOrder}
+        </button>
+      `;
+
+      document.getElementById("completeOrderBtn").addEventListener("click", () => {
+        completeOrder(currentAcceptedOrder.id);
+      });
+
+      // Inisiasi chat driver-penumpang
+      initChat(currentAcceptedOrder.data.passengerId, auth.currentUser.uid);
+    }
+
+    // --------- Selesaikan order & potong saldo ----------
+    function completeOrder(orderId) {
+      if (!auth.currentUser) return alert(translations[lang].notLoggedIn);
+
+      database
+        .ref(`orders/${orderId}`)
+        .once("value")
+        .then((snapshot) => {
+          const order = snapshot.val();
+          if (!order) return alert("Order tidak ditemukan");
+
+          if (order.status !== "accepted" || order.driverId !== auth.currentUser.uid) {
+            return alert(translations[lang].orderNotValidComplete);
+          }
+
+          // Potongan 6%
+          const fee = Math.round(order.tariff * 0.06);
+          const balanceRef = database.ref(`balances/${auth.currentUser.uid}`);
+
+          balanceRef.transaction(
+            (currentBalance) => {
+              if (currentBalance === null) return 0; // Jika belum ada saldo, 0
+              if (currentBalance < fee) {
+                alert(translations[lang].insufficientBalance);
+                return; // Batalkan transaksi potong saldo
+              }
+              return currentBalance - fee;
+            },
+            (error, committed, snapshot) => {
+              if (error) {
+                alert("Error potong saldo: " + error.message);
+              } else if (!committed) {
+                // Transaksi dibatalkan karena saldo kurang
+                alert(translations[lang].insufficientBalance);
+              } else {
+                // Update status order selesai
+                database.ref(`orders/${orderId}`).update({
+                  status: "completed",
+                  completedAt: Date.now(),
+                });
+                alert(
+                  lang === "id"
+                    ? `Order selesai, saldo dipotong Rp ${fee.toLocaleString("id-ID")}`
+                    : `Order completed, Rp ${fee.toLocaleString("en-US")} deducted from balance`
+                );
+                currentAcceptedOrder = null;
+                // Tampilkan ulang daftar order untuk driver
+                loadAvailableOrders();
+                orderSection.style.display = "none";
+                passengerOrderDiv.style.display = currentRole === "passenger" ? "block" : "none";
+                driverOrdersList.style.display = currentRole !== "passenger" ? "block" : "none";
+                loadHistory();
+              }
+            }
+          );
+        });
+    }
+
+    // --------- Load ongoing order (jika driver sudah ada order aktif) ----------
+    function loadOngoingOrder(uid) {
+      database
+        .ref("orders")
+        .orderByChild("driverId")
+        .equalTo(uid)
+        .on("value", (snapshot) => {
+          const orders = snapshot.val();
+          if (!orders) {
+            currentAcceptedOrder = null;
+            return;
+          }
+          for (const key in orders) {
+            if (orders[key].status === "accepted") {
+              currentAcceptedOrder = { id: key, data: orders[key] };
+              showCurrentOrder();
+              break;
+            }
+          }
+        });
+    }
+
+    // --------- Notifikasi sederhana ----------
+    function showNotification(message) {
+      notifMessage.textContent = message;
+      notifPopup.style.display = "block";
+      setTimeout(() => {
+        notifPopup.style.display = "none";
+      }, 4000);
+    }
+    notifPopup.addEventListener("click", () => {
+      notifPopup.style.display = "none";
+    });
+
+    // --------- Listen notif order baru (untuk driver) ----------
+    function listenNotifications(uid) {
+      if (currentRole === "passenger") return; // Penumpang gak perlu notif order baru
+
+      database
+        .ref("orders")
+        .orderByChild("status")
+        .equalTo("pending")
+        .on("child_added", (snapshot) => {
+          showNotification(lang === "id" ? "Order baru tersedia!" : "New order available!");
+          loadAvailableOrders();
+        });
+    }
+
+    // --------- Chat realtime driver & penumpang ----------
+    let chatRef = null;
+    function initChat(passengerId, driverId) {
+      chatSection.style.display = "block";
+      chatMessages.innerHTML = "";
+
+      if (chatRef) chatRef.off();
+
+      const chatId =
+        passengerId < driverId ? passengerId + "_" + driverId : driverId + "_" + passengerId;
+
+      chatRef = database.ref(`chats/${chatId}`);
+
+      chatRef.on("child_added", (snap) => {
+        const msg = snap.val();
+        const fromMe = msg.sender === auth.currentUser.uid;
+        const msgEl = document.createElement("div");
+        msgEl.style.textAlign = fromMe ? "right" : "left";
+        msgEl.style.margin = "5px 0";
+        msgEl.textContent = msg.text;
+        chatMessages.appendChild(msgEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
+    }
+
+    sendChatBtn.addEventListener("click", () => {
+      const text = chatInput.value.trim();
+      if (!text || !chatRef) return;
+      chatRef.push({
+        sender: auth.currentUser.uid,
+        text,
+        timestamp: Date.now(),
+      });
+      chatInput.value = "";
+    });
+
+    // --------- Load riwayat perjalanan ----------
+    function loadHistory() {
+      if (!auth.currentUser) return;
+      const uid = auth.currentUser.uid;
+      historyList.innerHTML = translations[lang].loadingOrders;
+      let ref;
+      if (currentRole === "passenger") {
+        ref = database.ref("orders").orderByChild("passengerId").equalTo(uid);
+      } else {
+        ref = database.ref("orders").orderByChild("driverId").equalTo(uid);
+      }
+      ref.once("value").then((snapshot) => {
+        const orders = snapshot.val();
+        if (!orders) {
+          historyList.innerHTML = translations[lang].noTripHistory;
+          return;
+        }
+        historyList.innerHTML = "";
+        for (const key in orders) {
+          const o = orders[key];
+          if (o.status !== "completed") continue;
+          const div = document.createElement("div");
+          const date = new Date(o.completedAt).toLocaleDateString(lang === "id" ? "id-ID" : "en-US");
+          div.innerHTML = `
+            <strong>${translations[lang].from}:</strong> ${o.pickup} <br />
+            <strong>${translations[lang].to}:</strong> ${o.destination} <br />
+            <strong>${translations[lang].fare}:</strong> Rp ${o.tariff.toLocaleString(
+              lang === "id" ? "id-ID" : "en-US"
+            )} <br />
+            <strong>${translations[lang].date}:</strong> ${date}
+          `;
+          historyList.appendChild(div);
+        }
+      });
+    }
+
+    // --------- Peta: Google Maps & Leaflet Setup ----------
+    function setupMap() {
+      if (mapProvider === "google") {
+        leafletDiv.style.display = "none";
+        mapDiv.style.display = "block";
+        if (!window.google || !window.google.maps) {
+          // Load Google Maps API script
+          const script = document.createElement("script");
+          script.src =
+            "https://maps.googleapis.com/maps/api/js?key=AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw&libraries=places";
+          script.async = true;
+          script.defer = true;
+          script.onload = initGoogleMap;
+          document.head.appendChild(script);
+        } else {
+          initGoogleMap();
+        }
+      } else if (mapProvider === "leaflet") {
+        mapDiv.style.display = "none";
+        leafletDiv.style.display = "block";
+        if (!leafletMap) initLeafletMap();
+      }
+    }
+
+    // Google Maps init
+    function initGoogleMap() {
+      if (map) return; // sudah inisialisasi
+      map = new google.maps.Map(mapDiv, {
+        center: { lat: -6.200000, lng: 106.816666 }, // Jakarta default
+        zoom: 12,
+        disableDefaultUI: true,
+        styles: [
+          { elementType: "geometry", stylers: [{ color: "#5E2B97" }] },
+          { elementType: "labels.text.stroke", stylers: [{ color: "#5E2B97" }] },
+          { elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] },
+          {
+            featureType: "administrative.locality",
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#b180e6" }],
+          },
+          {
+            featureType: "poi",
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#b180e6" }],
+          },
+          {
+            featureType: "road",
+            elementType: "geometry",
+            stylers: [{ color: "#6a4cb7" }],
+          },
+          {
+            featureType: "road",
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#d1baff" }],
+          },
+          {
+            featureType: "transit",
+            elementType: "geometry",
+            stylers: [{ color: "#7a40bd" }],
+          },
+          {
+            featureType: "water",
+            elementType: "geometry",
+            stylers: [{ color: "#482a70" }],
+          },
+        ],
+      });
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({ map });
+    }
+
+    // Leaflet init
+    function initLeafletMap() {
+      leafletMap = L.map(leafletDiv).setView([-6.200000, 106.816666], 12);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(leafletMap);
+      leafletRouteLayer = L.layerGroup().addTo(leafletMap);
+    }
+
+    // Tampilkan rute
+    function showRoute(pickup, destination) {
+      if (!pickup || !destination) return;
+      if (mapProvider === "google" && map && directionsService && directionsRenderer) {
+        directionsRenderer.setMap(map);
+        directionsService.route(
+          {
+            origin: pickup,
+            destination: destination,
+            travelMode: google.maps.TravelMode.DRIVING,
+          },
+          (result, status) => {
+            if (status === "OK") {
+              directionsRenderer.setDirections(result);
+            } else {
+              alert("Gagal menampilkan rute: " + status);
+            }
+          }
+        );
+      } else if (mapProvider === "leaflet" && leafletMap) {
+        leafletRouteLayer.clearLayers();
+        // Leaflet tidak punya service route resmi gratis,
+        // Kita bisa tampilkan marker saja sebagai alternatif
+        L.marker(getLatLngFromString(pickup)).addTo(leafletRouteLayer).bindPopup("Jemput");
+        L.marker(getLatLngFromString(destination)).addTo(leafletRouteLayer).bindPopup("Tujuan");
+        leafletMap.fitBounds([
+          getLatLngFromString(pickup),
+          getLatLngFromString(destination),
+        ]);
+      }
+    }
+
+    // Fungsi bantu konversi string ke latlng (untuk Leaflet)
+    // Karena kita menggunakan alamat string saja, sementara leaflet butuh latlng, 
+    // kita buat stub statis: untuk demo ini anggap lokasi Jakarta
+    function getLatLngFromString(str) {
+      // Di sini harusnya pakai geocoding service,
+      // tapi karena tanpa API kita pakai dummy koordinat
+      return [-6.200000 + Math.random() * 0.01, 106.816666 + Math.random() * 0.01];
+    }
+
+    // Tombol Logout
+    logoutBtn.addEventListener("click", () => {
+      auth.signOut().then(() => {
+        window.location.href = "index.html";
       });
     });
 
-    // Login user
-    loginBtn.addEventListener('click', () => {
-      const email = emailInput.value.trim();
-      const pass = passwordInput.value;
-      if(!email || !pass) {
-        messageEl.textContent = "Please enter email and password.";
-        return;
-      }
-      auth.signInWithEmailAndPassword(email, pass)
-      .then(userCredential => {
-        messageEl.textContent = translations[languageSelect.value].msgLoginSuccess;
+    // Inisialisasi UI
+    updateTexts();
+    checkLoginAndSetup();
+    setupMap();
 
-        // Redirect to dashboard, user can select role after login
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1200);
-      })
-      .catch(error => {
-        messageEl.textContent = translations[languageSelect.value].msgError + error.message;
-      });
-    });
-
-    // Register service worker for PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-      .then(() => console.log('Service Worker registered'))
-      .catch(e => console.log('Service Worker registration failed', e));
+    // Register Service Worker untuk PWA
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js");
     }
   </script>
 </body>
