@@ -101,4 +101,39 @@
         if (role === "passenger") window.location.href = "dashboard.html";
         else if (role === "carDriver") window.location.href = "dashboard-driver-car.html";
         else if (role === "motorDriver") window.location.href = "dashboard-driver-motor.html";
-        else if (role === "courier") windo
+        else if (role === "courier") window.location.href = "dashboard-courier.html";
+        else alert("Role tidak valid.");
+      }
+    });
+  </script>
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').then(() => {
+        console.log('Service Worker registered');
+      });
+    }
+  </script>
+</head>
+<body class="auth-body">
+  <form id="auth-form">
+    <h1>Welcome To TAXI PI</h1>
+    <p class="subtitle">By Pioneers For Pioneers</p>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <select id="role" required>
+      <option value="" disabled selected>Pilih peran / Select role</option>
+      <option value="passenger">Penumpang / Passenger</option>
+      <option value="carDriver">Driver Mobil / Car Driver</option>
+      <option value="motorDriver">Driver Motor / Motor Driver</option>
+      <option value="courier">Kurir / Courier</option>
+    </select>
+    <div class="buttons">
+      <button type="button" id="btn-login">Login</button>
+      <button type="button" id="btn-register">Register</button>
+    </div>
+    <div id="error-msg" style="color:red; margin-top:10px;"></div>
+  </form>
+</body>
+</html>
