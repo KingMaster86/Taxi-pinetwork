@@ -7,34 +7,11 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#5E2B97" />
   <link rel="stylesheet" href="style.css" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
-</head>
-<body class="auth-body">
-  <form id="auth-form">
-    <h1>Welcome To TAXI PI</h1>
-    <p class="subtitle">By Pioneers For Pioneers</p>
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <select id="role" required>
-      <option value="" disabled selected>Pilih peran / Select role</option>
-      <option value="passenger">Penumpang / Passenger</option>
-      <option value="carDriver">Driver Mobil / Car Driver</option>
-      <option value="motorDriver">Driver Motor / Motor Driver</option>
-      <option value="courier">Kurir / Courier</option>
-    </select>
-    <div class="buttons">
-      <button type="button" id="btn-login">Login</button>
-      <button type="button" id="btn-register">Register</button>
-    </div>
-    <div id="error-msg" style="color:red; margin-top:10px;"></div>
-  </form>
 
+  <!-- Firebase SDK -->
   <script type="module">
-    import { app } from './firebase.js';
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-analytics.js";
     import {
       getAuth,
       createUserWithEmailAndPassword,
@@ -46,73 +23,82 @@
       set
     } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
+      authDomain: "taxi-pi-network.firebaseapp.com",
+      databaseURL: "https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "taxi-pi-network",
+      storageBucket: "taxi-pi-network.firebasestorage.app",
+      messagingSenderId: "424683034285",
+      appId: "1:424683034285:web:78d616a9dd98a78a0cd824",
+      measurementId: "G-62J9SRR509"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
-    const role = document.getElementById("role");
-    const errorMsg = document.getElementById("error-msg");
+    window.addEventListener('DOMContentLoaded', () => {
+      const email = document.getElementById("email");
+      const password = document.getElementById("password");
+      const role = document.getElementById("role");
+      const errorMsg = document.getElementById("error-msg");
 
-    document.getElementById("btn-register").onclick = () => {
-      errorMsg.textContent = "";
-      if (!email.value || !password.value || !role.value) {
-        errorMsg.textContent = "Semua field harus diisi.";
-        return;
-      }
-      if (password.value.length < 6) {
-        errorMsg.textContent = "Password minimal 6 karakter.";
-        return;
-      }
+      document.getElementById("btn-register").onclick = () => {
+        errorMsg.textContent = "";
+        if (!email.value || !password.value || !role.value) {
+          errorMsg.textContent = "Semua field harus diisi.";
+          return;
+        }
+        if (password.value.length < 6) {
+          errorMsg.textContent = "Password minimal 6 karakter.";
+          return;
+        }
 
-      createUserWithEmailAndPassword(auth, email.value, password.value)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          set(ref(db, 'users/' + user.uid), {
-            email: user.email,
-            role: role.value,
-            balance: 0,
-            createdAt: Date.now()
-          });
-          redirectUser(role.value);
-        })
-        .catch((err) => {
-          errorMsg.textContent = err.message;
-        });
-    };
-
-    document.getElementById("btn-login").onclick = () => {
-      errorMsg.textContent = "";
-      if (!email.value || !password.value) {
-        errorMsg.textContent = "Email dan password wajib diisi.";
-        return;
-      }
-
-      signInWithEmailAndPassword(auth, email.value, password.value)
-        .then((userCredential) => {
-          const uid = userCredential.user.uid;
-          fetch(`https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app/users/${uid}.json`)
-            .then(res => res.json())
-            .then(data => {
-              if (data && data.role) {
-                redirectUser(data.role);
-              } else {
-                errorMsg.textContent = "Role tidak ditemukan.";
-              }
+        createUserWithEmailAndPassword(auth, email.value, password.value)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            set(ref(db, 'users/' + user.uid), {
+              email: user.email,
+              role: role.value,
+              balance: 0,
+              createdAt: Date.now()
             });
-        })
-        .catch((err) => {
-          errorMsg.textContent = err.message;
-        });
-    };
+            redirectUser(role.value);
+          })
+          .catch((err) => {
+            errorMsg.textContent = err.message;
+          });
+      };
 
-    function redirectUser(role) {
-      if (role === "passenger") window.location.href = "dashboard.html";
-      else if (role === "carDriver") window.location.href = "dashboard-driver-car.html";
-      else if (role === "motorDriver") window.location.href = "dashboard-driver-motor.html";
-      else if (role === "courier") window.location.href = "dashboard-courier.html";
-      else alert("Role tidak valid.");
-    }
-  </script>
-</body>
-</html>
+      document.getElementById("btn-login").onclick = () => {
+        errorMsg.textContent = "";
+        if (!email.value || !password.value) {
+          errorMsg.textContent = "Email dan password wajib diisi.";
+          return;
+        }
+
+        signInWithEmailAndPassword(auth, email.value, password.value)
+          .then((userCredential) => {
+            const uid = userCredential.user.uid;
+            fetch(`https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app/users/${uid}.json`)
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.role) {
+                  redirectUser(data.role);
+                } else {
+                  errorMsg.textContent = "Role tidak ditemukan.";
+                }
+              });
+          })
+          .catch((err) => {
+            errorMsg.textContent = err.message;
+          });
+      };
+
+      function redirectUser(role) {
+        if (role === "passenger") window.location.href = "dashboard.html";
+        else if (role === "carDriver") window.location.href = "dashboard-driver-car.html";
+        else if (role === "motorDriver") window.location.href = "dashboard-driver-motor.html";
+        else if (role === "courier") windo
