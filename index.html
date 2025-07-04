@@ -2,167 +2,107 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login TAXI PI</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#5E2B97" />
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-database-compat.js"></script>
-  <style>
-    body {
-      background: #5E2B97;
-      color: #ffffff;
-      font-family: 'Poppins', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
     }
-    #login-form {
-      background: rgba(44, 13, 90, 0.9);
-      padding: 2rem;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      width: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    input, select, button {
-      padding: 0.7rem 1rem;
-      border-radius: 10px;
-      border: none;
-      font-size: 1rem;
-    }
-    input, select {
-      color: #000;
-    }
-    button {
-      background-color: #ffffff;
-      color: #5E2B97;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #d1c6f0;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 0 6px #c8aaff;
-    }
-    #error-msg {
-      color: #ff6b6b;
-      font-weight: 600;
-      min-height: 1.2rem;
-      text-align: center;
-    }
-  </style>
+  </script>
 </head>
-<body>
-  <form id="login-form">
+<body class="auth-body">
+  <form id="auth-form">
     <h1>Welcome To TAXI PI</h1>
+    <p class="subtitle">By Pioneers For Pioneers</p>
     <input type="email" id="email" placeholder="Email" required />
     <input type="password" id="password" placeholder="Password" required />
     <select id="role" required>
-      <option value="" disabled selected>Pilih peran</option>
-      <option value="passenger">Penumpang</option>
-      <option value="carDriver">Driver Mobil</option>
-      <option value="motorDriver">Driver Motor</option>
-      <option value="courier">Kurir</option>
+      <option value="" disabled selected>Pilih peran / Select role</option>
+      <option value="passenger">Penumpang / Passenger</option>
+      <option value="carDriver">Driver Mobil / Car Driver</option>
+      <option value="motorDriver">Driver Motor / Motor Driver</option>
+      <option value="courier">Kurir / Courier</option>
     </select>
-    <button type="button" id="btn-login">Login</button>
-    <button type="button" id="btn-register">Register</button>
+    <div class="buttons">
+      <button type="button" id="btn-login">Login</button>
+      <button type="button" id="btn-register">Register</button>
+    </div>
     <div id="error-msg"></div>
   </form>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAlKOlAxaXuGEL0nN0zH6TaKIjskS-ZyOw",
-      authDomain: "taxi-pi-network.firebaseapp.com",
-      databaseURL: "https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "taxi-pi-network",
-      storageBucket: "taxi-pi-network.firebasestorage.app",
-      messagingSenderId: "424683034285",
-      appId: "1:424683034285:web:78d616a9dd98a78a0cd824",
-      measurementId: "G-62J9SRR509"
-    };
+  <script type="module">
+    import { app } from './firebase.js';
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+    } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set
+    } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const roleSelect = document.getElementById("role");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const role = document.getElementById("role");
     const errorMsg = document.getElementById("error-msg");
 
-    document.getElementById("btn-register").addEventListener("click", () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      const role = roleSelect.value;
-
-      if (!email || !password || !role) {
-        errorMsg.textContent = "Isi semua kolom.";
+    document.getElementById("btn-register").onclick = () => {
+      if (!email.value || !password.value || !role.value) {
+        errorMsg.textContent = "Semua field harus diisi.";
         return;
       }
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(userCred => {
-          const uid = userCred.user.uid;
-          db.ref("users/" + uid).set({
-            email,
-            role,
+      createUserWithEmailAndPassword(auth, email.value, password.value)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          set(ref(db, 'users/' + user.uid), {
+            email: user.email,
+            role: role.value,
             balance: 0,
             createdAt: Date.now()
           });
-          redirect(role);
+          redirectUser(role.value);
         })
-        .catch(err => {
+        .catch((err) => {
           errorMsg.textContent = err.message;
-          console.error(err);
         });
-    });
+    };
 
-    document.getElementById("btn-login").addEventListener("click", () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-
-      if (!email || !password) {
-        errorMsg.textContent = "Isi email dan password.";
+    document.getElementById("btn-login").onclick = () => {
+      if (!email.value || !password.value) {
+        errorMsg.textContent = "Email dan password wajib diisi.";
         return;
       }
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then(userCred => {
-          const uid = userCred.user.uid;
-          db.ref("users/" + uid + "/role").once("value")
-            .then(snapshot => {
-              const role = snapshot.val();
-              if (!role) {
-                errorMsg.textContent = "Role tidak ditemukan.";
+      signInWithEmailAndPassword(auth, email.value, password.value)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          fetch(`https://taxi-pi-network-default-rtdb.asia-southeast1.firebasedatabase.app/users/${uid}.json`)
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.role) {
+                redirectUser(data.role);
               } else {
-                redirect(role);
+                errorMsg.textContent = "Role tidak ditemukan.";
               }
             });
         })
-        .catch(err => {
+        .catch((err) => {
           errorMsg.textContent = err.message;
-          console.error(err);
         });
-    });
+    };
 
-    function redirect(role) {
-      if (role === "passenger") location.href = "dashboard-passenger.html";
-      else if (role === "carDriver") location.href = "dashboard-driver-car.html";
-      else if (role === "motorDriver") location.href = "dashboard-driver-motor.html";
-      else if (role === "courier") location.href = "dashboard-courier.html";
-      else errorMsg.textContent = "Role tidak valid.";
+    function redirectUser(role) {
+      if (role === "passenger") window.location.href = "dashboard-passenger.html";
+      else if (role === "carDriver") window.location.href = "dashboard-driver-car.html";
+      else if (role === "motorDriver") window.location.href = "dashboard-driver-motor.html";
+      else if (role === "courier") window.location.href = "dashboard-courier.html";
     }
   </script>
 </body>
