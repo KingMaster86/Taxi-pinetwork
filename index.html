@@ -59,6 +59,11 @@
         errorMsg.textContent = "Semua field harus diisi.";
         return;
       }
+      if (password.value.length < 6) {
+        errorMsg.textContent = "Password minimal 6 karakter.";
+        return;
+      }
+
       createUserWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -80,6 +85,7 @@
         errorMsg.textContent = "Email dan password wajib diisi.";
         return;
       }
+
       signInWithEmailAndPassword(auth, email.value, password.value)
         .then((userCredential) => {
           const uid = userCredential.user.uid;
