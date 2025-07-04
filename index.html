@@ -30,7 +30,7 @@
       <button type="button" id="btn-login">Login</button>
       <button type="button" id="btn-register">Register</button>
     </div>
-    <div id="error-msg"></div>
+    <div id="error-msg" style="color:red; margin-top:10px;"></div>
   </form>
 
   <script type="module">
@@ -55,6 +55,7 @@
     const errorMsg = document.getElementById("error-msg");
 
     document.getElementById("btn-register").onclick = () => {
+      errorMsg.textContent = "";
       if (!email.value || !password.value || !role.value) {
         errorMsg.textContent = "Semua field harus diisi.";
         return;
@@ -81,6 +82,7 @@
     };
 
     document.getElementById("btn-login").onclick = () => {
+      errorMsg.textContent = "";
       if (!email.value || !password.value) {
         errorMsg.textContent = "Email dan password wajib diisi.";
         return;
@@ -105,10 +107,11 @@
     };
 
     function redirectUser(role) {
-      if (role === "passenger") window.location.href = "dashboard-passenger.html";
+      if (role === "passenger") window.location.href = "dashboard.html";
       else if (role === "carDriver") window.location.href = "dashboard-driver-car.html";
       else if (role === "motorDriver") window.location.href = "dashboard-driver-motor.html";
       else if (role === "courier") window.location.href = "dashboard-courier.html";
+      else alert("Role tidak valid.");
     }
   </script>
 </body>
